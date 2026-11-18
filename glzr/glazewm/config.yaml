@@ -110,6 +110,8 @@ workspaces:
 window_rules:
   - commands: ['ignore']
     match:
+      # Barra Zebar (si no, GlazeWM la mete en el mosaico).
+      - window_process: { equals: 'zebar' }
       # Picture-in-Picture de navegadores.
       - window_title: { regex: '[Pp]icture.in.[Pp]icture' }
         window_class: { regex: 'Chrome_WidgetWin_1|MozillaDialogClass' }

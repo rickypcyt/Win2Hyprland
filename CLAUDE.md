@@ -36,3 +36,4 @@ El usuario habla español. Cada cambio pedido = editar el archivo, aplicarlo y h
 - Atajos `lwin+…` de GlazeWM sustituyen a los de Windows (Win+E, Win+V, Win+S…).
 - `bind_to_monitor` usa el índice de `glazewm query monitors`, que cambia si se desconecta el HDMI.
 - El brillo por WMI solo funciona en la pantalla del portátil.
+- La regla `ignore` para `window_process: zebar` es obligatoria; sin ella la barra aparece como ventana en el mosaico.
