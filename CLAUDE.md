@@ -2,6 +2,7 @@
 
 Escritorio de Windows 11 configurado para parecerse al Hyprland que usaba en Linux.
 El usuario habla español. Cada cambio pedido = editar el archivo, aplicarlo y hacer commit.
+Repo público: https://github.com/rickypcyt/Win2Hyprland. Hacer `git push` solo cuando el usuario lo pida. Si cambian atajos o funciones, actualizar también `README.md`.
 
 ## Qué hay y dónde
 
