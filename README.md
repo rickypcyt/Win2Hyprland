@@ -108,6 +108,25 @@ Las teclas multimedia y de brillo del teclado funcionan como siempre.
 | `Ctrl+Alt+Shift+E` | Salir de GlazeWM |
 | `Ctrl+Alt+Shift+Space` | Pausar / reanudar el mosaico |
 
+### Terminal (WezTerm, mi kitty.conf traducido)
+
+Mismo estilo que mi kitty:
+- JetBrainsMono Nerd Font a 16.
+- Fondo negro al 86 % de opacidad y mi paleta de 16 colores.
+- Cursor de bloque y padding de 5.
+- Pestañas arriba en estilo powerline (solo aparecen con dos o más).
+
+| Atajo | Acción |
+|---|---|
+| `Ctrl+Alt+T` / `Ctrl+Alt+O` | Dividir: nueva terminal al lado |
+| `Ctrl+Alt+Y` | Dividir: nueva terminal debajo |
+| `Ctrl+Shift+←↑→↓` | Moverse entre divisiones |
+| `Ctrl+Shift+Alt+←↑→↓` | Redimensionar la división |
+| `Ctrl+Shift+W` | Cerrar la división activa |
+| `Ctrl+Alt+N` | Nueva pestaña (lo intercepta "siguiente canción" de AutoHotkey, igual que pasaba en Hyprland) |
+| `Ctrl+Shift+T` | Nueva pestaña (atajo de WezTerm que sí funciona) |
+| `Ctrl+PageUp` / `Ctrl+PageDown` | Pestaña anterior / siguiente |
+
 ---
 
 ## La barra (Zebar, estilo Waybar)
