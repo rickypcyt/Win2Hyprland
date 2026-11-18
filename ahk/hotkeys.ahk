@@ -9,6 +9,50 @@
 ; Modificadores AHK:  # = Win   ! = Alt   ^ = Ctrl   + = Shift
 ; ============================================================
 
+; ---------- Workspaces (ALT 1..0) ----------
+; GlazeWM se bugea si recibe Alt+número más rápido de lo que tarda en
+; cambiar de workspace (pierde teclas o deja el foco en una ventana oculta).
+; Aquí se coalescen: mientras GlazeWM está ocupado, las pulsaciones
+; intermedias se descartan y al terminar se manda solo la última.
+; Sin retardo cuando GlazeWM está libre.
+global WsTarget := "", WsSent := "", WsBusy := false
+GLAZE_CLI := "C:\Program Files\glzr.io\GlazeWM\cli\glazewm.exe"
+
+!1::WsGo("1")
+!2::WsGo("2")
+!3::WsGo("3")
+!4::WsGo("4")
+!5::WsGo("5")
+!6::WsGo("6")
+!7::WsGo("7")
+!8::WsGo("8")
+!9::WsGo("9")
+!0::WsGo("10")
+
+WsGo(name) {
+    global WsTarget
+    WsTarget := name
+    SetTimer WsFlush, -1
+}
+
+WsFlush() {
+    global WsTarget, WsSent, WsBusy, GLAZE_CLI
+    if WsBusy
+        return
+    WsBusy := true
+    try {
+        while (WsTarget != WsSent) {
+            t := WsTarget
+            RunWait '"' GLAZE_CLI '" command focus --workspace ' t, , "Hide"
+            WsSent := t
+        }
+    }
+    WsBusy := false
+    ; Si el usuario cambió de workspace por otro medio (clic en la barra),
+    ; olvidar el último enviado para no saltarse la próxima pulsación.
+    SetTimer () => (WsBusy ? 0 : (WsSent := "")), -400
+}
+
 ; ---------- Multimedia (CTRL ALT P / N) ----------
 ^!p::Send "{Media_Play_Pause}"
 ^!n::Send "{Media_Next}"

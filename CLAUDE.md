@@ -33,6 +33,7 @@ El usuario habla español. Cada cambio pedido = editar el archivo, aplicarlo y h
 - `Win` = apps y acciones de ventana · `Alt` = workspaces · `Ctrl+Alt` = multimedia/utilidades (AHK) · `Ctrl+Alt+Shift` = control de GlazeWM.
 - Un atajo vive en **un solo sitio**: GlazeWM si lanza algo o maneja ventanas, AHK si necesita enviar teclas/WMI. Antes de añadir uno, buscar que no esté ya en el otro archivo.
 - Windows no deja usar `Win+L` (bloqueo).
+- **Excepción: `Alt+1..0` (cambiar de workspace) está en AHK, no en GlazeWM.** El usuario los pulsa muy rápido en ráfagas (1234 4321…); en GlazeWM eso perdía teclas y dejaba el foco en ventanas ocultas. `WsGo`/`WsFlush` en `hotkeys.ahk` coalescen las pulsaciones y llaman a `glazewm command focus --workspace N` solo con la última. No volver a ponerlos en `config.yaml`. (`Alt+Shift+N` sí sigue en GlazeWM.)
 
 ## Trampas conocidas
 

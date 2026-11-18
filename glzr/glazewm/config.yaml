@@ -92,14 +92,19 @@ window_behavior:
 #   0 = BenQ externo (BNQ78FA)   1 = pantalla del portátil (NCP002D)
 workspaces:
   - name: '1'
+    keep_alive: true
     bind_to_monitor: 0
   - name: '2'
+    keep_alive: true
     bind_to_monitor: 1
   - name: '3'
+    keep_alive: true
     bind_to_monitor: 1
   - name: '4'
+    keep_alive: true
     bind_to_monitor: 1
   - name: '5'
+    keep_alive: true
     bind_to_monitor: 1
   - name: '6'
   - name: '7'
@@ -228,26 +233,9 @@ keybindings:
   # ----------------------------------------------------------
   # WORKSPACES
   # ----------------------------------------------------------
-  - commands: ['focus --workspace 1']
-    bindings: ['alt+1']
-  - commands: ['focus --workspace 2']
-    bindings: ['alt+2']
-  - commands: ['focus --workspace 3']
-    bindings: ['alt+3']
-  - commands: ['focus --workspace 4']
-    bindings: ['alt+4']
-  - commands: ['focus --workspace 5']
-    bindings: ['alt+5']
-  - commands: ['focus --workspace 6']
-    bindings: ['alt+6']
-  - commands: ['focus --workspace 7']
-    bindings: ['alt+7']
-  - commands: ['focus --workspace 8']
-    bindings: ['alt+8']
-  - commands: ['focus --workspace 9']
-    bindings: ['alt+9']
-  - commands: ['focus --workspace 10']
-    bindings: ['alt+0']
+  # ALT+1..0 (cambiar de workspace) lo maneja AutoHotkey (ahk/hotkeys.ahk)
+  # para que pulsarlo muy rápido no se bugee: se queda solo con la última tecla.
+
 
   # movetoworkspace (mueve y te lleva, como en Hyprland)
   - commands: ['move --workspace 1', 'focus --workspace 1']
