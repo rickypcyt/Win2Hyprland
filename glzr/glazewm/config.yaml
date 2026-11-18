@@ -194,7 +194,7 @@ keybindings:
   # GESTIÓN DE VENTANAS
   # ----------------------------------------------------------
   - commands: ['close']
-    bindings: ['lwin+w']
+    bindings: ['alt+w']
 
   - commands: ['toggle-floating --centered']
     bindings: ['lwin+i']
