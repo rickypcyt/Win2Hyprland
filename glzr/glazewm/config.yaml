@@ -47,7 +47,7 @@ gaps:
     left: '10px'
 
 
-# border_size = 0, rounding = 10, inactive_opacity = 0.9
+# border_size = 0, rounding = 10 (sin transparencia en ventanas inactivas)
 # (blur no existe en Windows)
 window_effects:
   focused_window:
@@ -70,8 +70,7 @@ window_effects:
       enabled: true
       style: 'rounded'
     transparency:
-      enabled: true
-      opacity: '90%'
+      enabled: false
 
 
 # layout = dwindle → tiling

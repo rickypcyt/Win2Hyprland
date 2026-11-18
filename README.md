@@ -24,7 +24,7 @@ Va rápido y funciona bien en el día a día. Puedo hacer mi manía de pulsar `A
 
 - **Mosaico automático** con `gaps_in = 5` y `gaps_out = 10`, igual que en Hyprland.
 - **Esquinas redondeadas**, sin bordes ni barras de título.
-- **Ventanas inactivas al 90 % de opacidad**, como `inactive_opacity = 0.9`.
+- **Sin transparencia**: todas las ventanas opacas (en Hyprland tenía `inactive_opacity = 0.9`, aquí lo quité).
 - **El foco sigue al ratón**, como `follow_mouse = 1`.
 - **Workspaces fijos por monitor:** el 1 en el monitor externo y del 2 al 5 en la pantalla del portátil, como tenía con `workspace = N, monitor:…`.
 - **Barra superior negra de 35 px**, con JetBrainsMono Nerd Font y colores Catppuccin Mocha, igual que mi Waybar.
