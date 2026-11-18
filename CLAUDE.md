@@ -1,4 +1,4 @@
-# Dotfiles de Windows (estilo Hyprland)
+# Win2Hyprland — notas para Claude
 
 Escritorio de Windows 11 configurado para parecerse al Hyprland que usaba en Linux.
 El usuario habla español. Cada cambio pedido = editar el archivo, aplicarlo y hacer commit.
@@ -7,10 +7,10 @@ El usuario habla español. Cada cambio pedido = editar el archivo, aplicarlo y h
 
 | Herramienta | Papel (equivalente Linux) | Archivo en este repo | Cómo lo lee el programa |
 |---|---|---|---|
-| GlazeWM 3.x | gestor de ventanas tiling (Hyprland) | `glzr/glazewm/config.yaml` | `~\.glzr` es un **junction** a `dotfiles\glzr` |
+| GlazeWM 3.x | gestor de ventanas tiling (Hyprland) | `glzr/glazewm/config.yaml` | `~\.glzr` es un **junction** a `Win2Hyprland\glzr` |
 | Zebar | barra superior (Waybar) | `glzr/zebar/waybar/` (pack propio: `bar.html` lógica, `styles.css` colores Catppuccin, `zpack.json` tamaño/permisos); `glzr/zebar/settings.json` elige el pack | mismo junction |
 | AutoHotkey v2 | atajos que GlazeWM no puede: multimedia, brillo, capturas | `ahk/hotkeys.ahk` | lo lanza GlazeWM en `startup_commands` |
-| WezTerm | terminal (kitty) | `wezterm/wezterm.lua` | `~\.config\wezterm` es un **junction** a `dotfiles\wezterm` |
+| WezTerm | terminal (kitty) | `wezterm/wezterm.lua` | `~\.config\wezterm` es un **junction** a `Win2Hyprland\wezterm` |
 | Flow Launcher | lanzador (rofi) | *no está en el repo* | `%LOCALAPPDATA%\FlowLauncher\Settings\Settings.json` (Flow lo sobrescribe al salir: cerrar Flow antes de editarlo) |
 
 `hyprland-reference.conf` es la config original de Hyprland, solo como referencia de qué atajo hacía qué.

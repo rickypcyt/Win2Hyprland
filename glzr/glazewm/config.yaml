@@ -1,8 +1,8 @@
 # ============================================================
 # GLAZEWM — traducción de hyprland.conf
 # ============================================================
-# Archivo real:  C:\Users\ricar\dotfiles\glzr\glazewm\config.yaml
-# (~\.glzr es un junction a dotfiles\glzr)
+# Archivo real:  C:\Users\ricar\Win2Hyprland\glzr\glazewm\config.yaml
+# (~\.glzr es un junction a Win2Hyprland\glzr)
 #
 # Recargar en caliente:  glazewm command wm-reload-config
 #                        o  Ctrl+Alt+Shift+R
@@ -21,7 +21,7 @@ general:
   # Al arrancar: barra (Zebar) + atajos de AutoHotkey.
   startup_commands:
     - 'shell-exec zebar'
-    - 'shell-exec C:/Users/ricar/dotfiles/ahk/hotkeys.ahk'
+    - 'shell-exec C:/Users/ricar/Win2Hyprland/ahk/hotkeys.ahk'
   shutdown_commands:
     - 'shell-exec taskkill /IM zebar.exe /F'
   config_reload_commands: []

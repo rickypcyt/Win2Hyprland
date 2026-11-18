@@ -1,6 +1,6 @@
 -- WezTerm (sustituto de kitty)
--- Archivo real: C:\Users\ricar\dotfiles\wezterm\wezterm.lua
--- (~\.config\wezterm es un junction a dotfiles\wezterm)
+-- Archivo real: C:\Users\ricar\Win2Hyprland\wezterm\wezterm.lua
+-- (~\.config\wezterm es un junction a Win2Hyprland\wezterm)
 -- WezTerm recarga este archivo automáticamente al guardarlo.
 local wezterm = require 'wezterm'
 local config = wezterm.config_builder()
