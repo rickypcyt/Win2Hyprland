@@ -10,13 +10,47 @@
 ; ============================================================
 
 ; ---------- Workspaces (ALT 1..0) ----------
-; GlazeWM se bugea si recibe Alt+número más rápido de lo que tarda en
-; cambiar de workspace (pierde teclas o deja el foco en una ventana oculta).
-; Aquí se coalescen: mientras GlazeWM está ocupado, las pulsaciones
-; intermedias se descartan y al terminar se manda solo la última.
-; Sin retardo cuando GlazeWM está libre.
+; Vía rápida: el número se escribe en la named pipe de glaze-bridge.ps1,
+; que lo manda a GlazeWM por un WebSocket ya abierto (~1 ms aquí + lo que
+; tarde GlazeWM). El puente coalesce las ráfagas (Alt+1234 4321 rápido):
+; si GlazeWM está ocupado solo manda la última tecla.
+; Si el puente no está disponible, se usa la vía lenta (glazewm.exe, ~270 ms).
 global WsTarget := "", WsSent := "", WsBusy := false
 GLAZE_CLI := "C:\Program Files\glzr.io\GlazeWM\cli\glazewm.exe"
+WS_PIPE := "\\.\pipe\win2hyprland-ws"
+
+; Arrancar el puente (si ya hay uno corriendo, el nuevo sale solo).
+Run 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' A_ScriptDir '\glaze-bridge.ps1"', , "Hide"
+
+global WsPipe := ""
+
+WsGo(name) {
+    ; Critical: una pulsación no puede interrumpir a otra, así que los números
+    ; llegan al puente en el mismo orden en que se pulsaron.
+    Critical
+    global WsPipe, WS_PIPE
+    msg := name "`n"
+    buf := Buffer(StrPut(msg, "UTF-8") - 1)
+    StrPut(msg, buf, "UTF-8")
+    loop 3 {
+        try {
+            if !IsObject(WsPipe)
+                WsPipe := FileOpen(WS_PIPE, "w")   ; conexión persistente
+            if DllCall("WriteFile", "ptr", WsPipe.Handle, "ptr", buf, "uint", buf.Size
+                     , "uint*", &written := 0, "ptr", 0)
+                return
+        }
+        WsPipe := ""                               ; puente reiniciado: reconectar
+        Sleep 5
+    }
+    WsGoSlow(name)                                 ; puente caído: vía lenta
+}
+
+WsGoSlow(name) {
+    global WsTarget
+    WsTarget := name
+    SetTimer WsFlush, -1
+}
 
 !1::WsGo("1")
 !2::WsGo("2")
@@ -28,12 +62,6 @@ GLAZE_CLI := "C:\Program Files\glzr.io\GlazeWM\cli\glazewm.exe"
 !8::WsGo("8")
 !9::WsGo("9")
 !0::WsGo("10")
-
-WsGo(name) {
-    global WsTarget
-    WsTarget := name
-    SetTimer WsFlush, -1
-}
 
 WsFlush() {
     global WsTarget, WsSent, WsBusy, GLAZE_CLI

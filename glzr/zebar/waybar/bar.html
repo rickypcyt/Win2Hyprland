@@ -62,7 +62,7 @@
           sock.send('query monitors');
         }
         function connect() {
-          sock = new WebSocket('ws://localhost:6123');
+          sock = new WebSocket('ws://127.0.0.1:6123');
           sock.onopen = () => { pendingSince = 0; sock.send('sub -e all'); refresh(); };
           sock.onmessage = e => {
             let m; try { m = JSON.parse(e.data); } catch { return; }
