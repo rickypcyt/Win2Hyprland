@@ -46,8 +46,46 @@
       };
       const PERSISTENT_WS = ['1', '2', '3', '4', '5'];
 
+      // ---------- conexión directa con GlazeWM ----------
+      // El proveedor 'glazewm' de Zebar se queda congelado si se cambia de
+      // workspace muy rápido (Alt+1234 4321...). Aquí se habla directamente con
+      // el WebSocket IPC de GlazeWM: re-consulta en cada evento (sin acumular
+      // consultas), sondeo de seguridad cada 500 ms y reconexión automática.
+      const glaze = (() => {
+        let sock = null, pendingSince = 0, again = false;
+        const listeners = [];
+        const open = () => sock && sock.readyState === WebSocket.OPEN;
+        function refresh() {
+          if (!open()) return;
+          if (pendingSince && Date.now() - pendingSince < 2000) { again = true; return; }
+          pendingSince = Date.now();
+          sock.send('query monitors');
+        }
+        function connect() {
+          sock = new WebSocket('ws://localhost:6123');
+          sock.onopen = () => { pendingSince = 0; sock.send('sub -e all'); refresh(); };
+          sock.onmessage = e => {
+            let m; try { m = JSON.parse(e.data); } catch { return; }
+            if (m.messageType === 'client_response' && m.clientMessage === 'query monitors') {
+              pendingSince = 0;
+              if (m.success) listeners.forEach(f => f(m.data.monitors));
+              if (again) { again = false; refresh(); }
+            } else if (m.messageType === 'event_subscription') {
+              refresh();
+            }
+          };
+          sock.onclose = () => { pendingSince = 0; setTimeout(connect, 1000); };
+          sock.onerror = () => sock.close();
+        }
+        connect();
+        setInterval(refresh, 500);
+        return {
+          onChange: f => listeners.push(f),
+          run: cmd => { if (open()) sock.send('command ' + cmd); },
+        };
+      })();
+
       const providers = zebar.createProviderGroup({
-        glazewm: { type: 'glazewm' },
         systray: { type: 'systray' },
         media: { type: 'media' },
         time: { type: 'date', formatting: 'HH:mm' },
@@ -64,23 +102,38 @@
       const settings = uri => zebar.shellExec('explorer', uri).catch(() => {});
 
       // ---------- workspaces (persistentes 1-5, como en Waybar) ----------
-      function renderWorkspaces(gw) {
+      // Monitor en el que está esta barra (por posición de la ventana).
+      function myMonitor(monitors) {
+        const x = window.screenX + 5, y = window.screenY + 5;
+        return monitors.find(m => x >= m.x && x < m.x + m.width && y >= m.y && y < m.y + m.height)
+          ?? monitors.find(m => m.hasFocus) ?? monitors[0];
+      }
+
+      let wsKey = '';
+      function renderWorkspaces(monitors) {
         const el = $('workspaces');
-        if (!gw) { el.innerHTML = ''; return; }
-        const existing = new Map(gw.allWorkspaces.map(w => [w.name, w]));
+        const mine = myMonitor(monitors);
+        const all = monitors.flatMap(m => m.children.filter(c => c.type === 'workspace'));
+        const existing = new Map(all.map(w => [w.name, w]));
         const names = [...new Set([...PERSISTENT_WS, ...existing.keys()])]
           .sort((a, b) => Number(a) - Number(b));
+        // activo = el workspace que se ve en ESTE monitor
+        const activeName = mine?.children.find(w => w.isDisplayed)?.name;
+        const key = names.join() + '|' + activeName;
+        if (key === wsKey) return; // nada cambió: no tocar el DOM
+        wsKey = key;
         el.replaceChildren(...names.map(name => {
-          const ws = existing.get(name);
-          const active = ws && (ws.hasFocus || (ws.isDisplayed && gw.currentWorkspaces.includes(ws)));
+          const active = name === activeName;
           const b = document.createElement('button');
           b.className = active ? 'active' : '';
           b.textContent = active ? I.wsActive : I.wsDefault;
           b.title = `Workspace ${name}`;
-          b.onclick = () => gw.runCommand(`focus --workspace ${name}`);
+          b.onclick = () => glaze.run(`focus --workspace ${name}`);
           return b;
         }));
       }
+      renderWorkspaces([]);
+      glaze.onChange(renderWorkspaces);
 
       // ---------- tray ----------
       let trayHash = '';
@@ -172,7 +225,6 @@
 
       function render() {
         const o = providers.outputMap;
-        renderWorkspaces(o.glazewm);
         renderTray(o.systray);
         renderMedia(o.media);
 
