@@ -112,7 +112,7 @@ Las teclas multimedia y de brillo del teclado funcionan como siempre.
 
 Mismo estilo que mi kitty:
 - JetBrainsMono Nerd Font a 16.
-- Fondo negro al 86 % de opacidad y mi paleta de 16 colores.
+- Fondo negro sólido (sin transparencia) y mi paleta de 16 colores.
 - Cursor de bloque y padding de 5.
 - Pestañas arriba en estilo powerline (solo aparecen con dos o más).
 

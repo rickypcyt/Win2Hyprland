@@ -57,8 +57,9 @@ config.colors = {
   },
 }
 
--- ---------- Transparencia ----------
-config.window_background_opacity = 0.86
+-- ---------- Fondo ----------
+-- Negro sólido, sin transparencia (en kitty tenía background_opacity 0.86)
+config.window_background_opacity = 1.0
 
 -- ---------- Ventana ----------
 config.window_padding = { left = 5, right = 5, top = 5, bottom = 5 } -- window_padding_width 5
