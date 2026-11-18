@@ -1,0 +1,338 @@
+# ============================================================
+# GLAZEWM — HYPRLAND-STYLE WORKSPACE MANAGER
+# ============================================================
+# Windows + GlazeWM
+#
+# FILOSOFÍA:
+#   - Sin tiling automático.
+#   - Todas las ventanas se abren flotando.
+#   - GlazeWM se utiliza principalmente para workspaces.
+#   - Los atajos siguen una lógica similar a Hyprland:
+#       MOD       = alt
+#       MOD+SHIFT = mover ventana
+#       CTRL+ALT  = acciones de ventana
+#       WIN       = lanzar aplicaciones
+#
+# ARCHIVO:
+#   %USERPROFILE%\.glzr\glazewm\config.yaml
+# ============================================================
+
+
+# ============================================================
+# 1. GENERAL — COMPORTAMIENTO GLOBAL
+# ============================================================
+
+general:
+  # Script personal ejecutado al iniciar GlazeWM.
+  #startup_commands:
+  #  - 'shell-exec "C:\Users\ricar\Documents\A.ahk"'
+
+  # El foco sigue al cursor cuando corresponde.
+  focus_follows_cursor: true
+
+  # No volver automáticamente al workspace anterior
+  # al enfocar una ventana que ya estaba seleccionada.
+  toggle_workspace_on_refocus: false
+
+  # No mover el cursor automáticamente al cambiar de ventana.
+  cursor_jump:
+    enabled: false
+
+  # Método utilizado para ocultar ventanas de otros workspaces.
+  hide_method: 'cloak'
+
+  # Las ventanas de todos los workspaces no aparecen
+  # simultáneamente en la barra de tareas.
+  show_all_in_taskbar: true
+
+
+# ============================================================
+# 2. GAPS — ESPACIADO
+# ============================================================
+# Como no utilizamos tiling, estos valores no crean una
+# cuadrícula de ventanas. Se mantienen en cero para que
+# las ventanas flotantes no tengan márgenes artificiales.
+
+gaps:
+  scale_with_dpi: true
+
+  inner_gap: '0px'
+
+  outer_gap:
+    top: '0px'
+    right: '0px'
+    bottom: '0px'
+    left: '0px'
+
+
+# ============================================================
+# 3. WINDOW EFFECTS — APARIENCIA DE LAS VENTANAS
+# ============================================================
+# Estilo discreto, similar a una configuración minimalista.
+#
+# Ventana enfocada:
+#   - Sin borde adicional.
+#   - Conserva la barra de título de Windows.
+#
+# Otras ventanas:
+#   - Sin borde adicional.
+#   - Oculta la barra de título para reducir ruido visual.
+#
+# NOTA:
+#   Si prefieres que TODAS las ventanas conserven su barra
+#   de título, cambia other_windows.hide_title_bar.enabled
+#   a false.
+
+window_effects:
+  focused_window:
+    border:
+      enabled: false
+
+    hide_title_bar:
+      enabled: false
+
+    corner_style:
+      enabled: false
+
+    transparency:
+      enabled: false
+
+  other_windows:
+    border:
+      enabled: false
+
+    hide_title_bar:
+      enabled: true
+
+    corner_style:
+      enabled: false
+
+    transparency:
+      enabled: false
+
+
+# ============================================================
+# 4. WINDOW BEHAVIOR — COMPORTAMIENTO INICIAL
+# ============================================================
+# Este es el apartado más importante para tu objetivo:
+# las ventanas no se organizan mediante tiling.
+#
+# Todas empiezan en estado FLOATING.
+
+window_behavior:
+  initial_state: 'floating'
+
+  state_defaults:
+    floating:
+      # No fuerza a centrar las ventanas.
+      centered: false
+
+      # No mantiene las ventanas flotantes siempre encima.
+      shown_on_top: true
+
+    fullscreen:
+      # El fullscreen no utiliza el estado maximizado.
+      maximized: false
+
+      # Una ventana en fullscreen queda por encima.
+      shown_on_top: true
+
+
+# ============================================================
+# 5. WORKSPACES — ESPACIOS DE TRABAJO
+# ============================================================
+# Diez workspaces numerados.
+#
+# ALT + número       -> cambiar de workspace
+# ALT + SHIFT + núm. -> mover ventana al workspace
+#
+# ALT+0 representa el workspace 10.
+
+workspaces:
+  - name: '1'
+  - name: '2'
+  - name: '3'
+  - name: '4'
+  - name: '5'
+  - name: '6'
+  - name: '7'
+  - name: '8'
+  - name: '9'
+  - name: '10'
+
+
+# ============================================================
+# 6. WINDOW RULES — EXCEPCIONES
+# ============================================================
+# Estas ventanas se ignoran para evitar que GlazeWM intente
+# gestionarlas como ventanas normales.
+#
+# Útil para diálogos, componentes del sistema y ventanas
+# temporales que pueden provocar comportamientos extraños.
+
+window_rules:
+  - commands: ['ignore']
+    match:
+      # Picture-in-Picture de navegadores.
+      - window_title: { regex: '[Pp]icture.in.[Pp]icture' }
+        window_class: { regex: 'Chrome_WidgetWin_1|MozillaDialogClass' }
+
+      # PowerToys PowerAccent.
+      - window_process: { equals: 'PowerToys' }
+        window_class: { regex: 'HwndWrapper\[PowerToys\.PowerAccent.*?\]' }
+
+      # Diálogos nativos de Windows:
+      # Abrir, Guardar, seleccionar archivos, etc.
+      - window_class: { regex: '^#32770$' }
+
+      # Seguridad de Windows.
+      - window_title: { regex: 'Windows Security' }
+
+      # Componentes del shell de Windows.
+      - window_process: { equals: 'ShellExperienceHost' }
+
+      # Buscador de Windows.
+      - window_process: { equals: 'SearchHost' }
+
+
+# ============================================================
+# 7. KEYBINDINGS — ATAJOS DE TECLADO
+# ============================================================
+#
+# CONVENCIÓN GENERAL:
+#
+#   ALT                  = cambiar de workspace
+#   ALT + SHIFT          = mover ventana entre workspaces
+#   CTRL + ALT           = acciones sobre la ventana
+#   CTRL + ALT + SHIFT   = control de GlazeWM
+#   LWIN                 = lanzar aplicaciones
+#
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 7.1 VENTANAS — ACCIONES BÁSICAS
+# ------------------------------------------------------------
+
+keybindings:
+
+  # Cerrar ventana enfocada.
+  - commands: ['close']
+    bindings: ['alt+w']
+
+  # Activar o desactivar fullscreen.
+  - commands: ['toggle-fullscreen']
+    bindings: ['ctrl+alt+up']
+
+  # Minimizar o restaurar la ventana enfocada.
+  - commands: ['toggle-minimized']
+    bindings: ['ctrl+alt+down']
+
+  # ----------------------------------------------------------
+  # 7.2 LANZADORES — APLICACIONES
+  # ----------------------------------------------------------
+  # Atajos para abrir aplicaciones de uso frecuente.
+
+  # PowerShell.
+  - commands: ['shell-exec powershell']
+    bindings: ['lwin+enter']
+
+  # Brave Browser.
+  - commands: ['shell-exec "C:\Users\ricar\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe"']
+    bindings: ['lwin+f']
+
+
+  # ----------------------------------------------------------
+  # 7.3 WORKSPACES — CAMBIAR DE ESPACIO
+  # ----------------------------------------------------------
+  # ALT + 1..9 -> workspaces 1..9
+  # ALT + 0    -> workspace 10
+
+  - commands: ['focus --workspace 1']
+    bindings: ['alt+1']
+
+  - commands: ['focus --workspace 2']
+    bindings: ['alt+2']
+
+  - commands: ['focus --workspace 3']
+    bindings: ['alt+3']
+
+  - commands: ['focus --workspace 4']
+    bindings: ['alt+4']
+
+  - commands: ['focus --workspace 5']
+    bindings: ['alt+5']
+
+  - commands: ['focus --workspace 6']
+    bindings: ['alt+6']
+
+  - commands: ['focus --workspace 7']
+    bindings: ['alt+7']
+
+  - commands: ['focus --workspace 8']
+    bindings: ['alt+8']
+
+  - commands: ['focus --workspace 9']
+    bindings: ['alt+9']
+
+  - commands: ['focus --workspace 10']
+    bindings: ['alt+0']
+
+
+  # ----------------------------------------------------------
+  # 7.4 WORKSPACES — MOVER VENTANA + CAMBIAR
+  # ----------------------------------------------------------
+  # ALT + SHIFT + número:
+  #   1. Mueve la ventana al workspace indicado.
+  #   2. Cambia inmediatamente a ese workspace.
+  #
+  # Es el equivalente funcional a un flujo de movimiento
+  # de ventanas entre workspaces típico de Hyprland.
+
+  - commands: ['move --workspace 1', 'focus --workspace 1']
+    bindings: ['alt+shift+1']
+
+  - commands: ['move --workspace 2', 'focus --workspace 2']
+    bindings: ['alt+shift+2']
+
+  - commands: ['move --workspace 3', 'focus --workspace 3']
+    bindings: ['alt+shift+3']
+
+  - commands: ['move --workspace 4', 'focus --workspace 4']
+    bindings: ['alt+shift+4']
+
+  - commands: ['move --workspace 5', 'focus --workspace 5']
+    bindings: ['alt+shift+5']
+
+  - commands: ['move --workspace 6', 'focus --workspace 6']
+    bindings: ['alt+shift+6']
+
+  - commands: ['move --workspace 7', 'focus --workspace 7']
+    bindings: ['alt+shift+7']
+
+  - commands: ['move --workspace 8', 'focus --workspace 8']
+    bindings: ['alt+shift+8']
+
+  - commands: ['move --workspace 9', 'focus --workspace 9']
+    bindings: ['alt+shift+9']
+
+  - commands: ['move --workspace 10', 'focus --workspace 10']
+    bindings: ['alt+shift+0']
+
+
+  # ----------------------------------------------------------
+  # 7.5 GLAZEWM — CONTROL DEL GESTOR
+  # ----------------------------------------------------------
+  # Recargar configuración, salir o pausar la gestión.
+
+  # Recargar configuración sin cerrar GlazeWM.
+  - commands: ['wm-reload-config']
+    bindings: ['ctrl+alt+shift+r']
+
+  # Salir de GlazeWM.
+  - commands: ['wm-exit']
+    bindings: ['ctrl+alt+shift+e']
+
+  # Pausar o reanudar GlazeWM.
+  - commands: ['wm-toggle-pause']
+    bindings: ['ctrl+alt+shift+space']
