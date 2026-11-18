@@ -8,7 +8,7 @@ El usuario habla español. Cada cambio pedido = editar el archivo, aplicarlo y h
 | Herramienta | Papel (equivalente Linux) | Archivo en este repo | Cómo lo lee el programa |
 |---|---|---|---|
 | GlazeWM 3.x | gestor de ventanas tiling (Hyprland) | `glzr/glazewm/config.yaml` | `~\.glzr` es un **junction** a `dotfiles\glzr` |
-| Zebar | barra superior (Waybar) | `glzr/zebar/` (`settings.json` elige el widget pack) | mismo junction |
+| Zebar | barra superior (Waybar) | `glzr/zebar/waybar/` (pack propio: `bar.html` lógica, `styles.css` colores Catppuccin, `zpack.json` tamaño/permisos); `glzr/zebar/settings.json` elige el pack | mismo junction |
 | AutoHotkey v2 | atajos que GlazeWM no puede: multimedia, brillo, capturas | `ahk/hotkeys.ahk` | lo lanza GlazeWM en `startup_commands` |
 | WezTerm | terminal (kitty) | `wezterm/wezterm.lua` | `~\.config\wezterm` es un **junction** a `dotfiles\wezterm` |
 | Flow Launcher | lanzador (rofi) | *no está en el repo* | `%LOCALAPPDATA%\FlowLauncher\Settings\Settings.json` (Flow lo sobrescribe al salir: cerrar Flow antes de editarlo) |
@@ -20,7 +20,11 @@ El usuario habla español. Cada cambio pedido = editar el archivo, aplicarlo y h
 - **GlazeWM**: `glazewm command wm-reload-config` (o Ctrl+Alt+Shift+R). Si algo falla, mirar `glzr/glazewm/errors.log`.
   Comprobar estado: `glazewm query monitors` / `glazewm query workspaces`.
   CLI: `C:\Program Files\glzr.io\GlazeWM\cli\glazewm.exe`.
-- **Zebar**: se reinicia con GlazeWM, o `taskkill /IM zebar.exe /F` y `zebar`.
+- **Zebar**: `taskkill /IM zebar.exe /F` y `zebar`. Errores en `glzr/zebar/errors.log`.
+  Para ver el resultado: captura de la franja superior con System.Drawing (`CopyFromScreen`) y leer el PNG.
+  En `settings.json` el pack local se llama por su `name` a secas (`"waybar"`, no `local.waybar`).
+  Proveedores disponibles (zebar 3.3): glazewm, systray, media, date, cpu, memory, audio, battery, network, disk, weather, keyboard, host, ip. No hay temperatura ni brillo.
+  Abrir cosas desde la barra = `zebar.shellExec`, y el programa/argumentos deben estar permitidos en `privileges.shellCommands` de `zpack.json`.
 - **AutoHotkey**: ejecutar de nuevo `ahk\hotkeys.ahk` (tiene `#SingleInstance Force`, reemplaza la instancia).
 - **WezTerm**: recarga solo al guardar.
 

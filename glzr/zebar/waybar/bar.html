@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="bar">
+      <div class="left">
+        <div class="workspaces" id="workspaces"></div>
+        <div class="module tray" id="tray"></div>
+        <div class="module media" id="media"></div>
+      </div>
+      <div class="center">
+        <span class="module" id="time"></span>
+        <span class="sep">|</span>
+        <span class="module" id="date"></span>
+        <span class="sep">|</span>
+        <span class="module" id="ec" title="Ecuador"></span>
+      </div>
+      <div class="right">
+        <span class="module" id="cpu"></span>
+        <span class="module" id="memory"></span>
+        <span class="module audio" id="audio"></span>
+        <span class="module battery" id="battery"></span>
+      </div>
+    </div>
+
+    <script type="module">
+      import * as zebar from 'https://esm.sh/zebar@3.3.1';
+
+      // Iconos Nerd Font (por código para que no se pierdan al copiar).
+      const I = {
+        wsDefault: '', //   círculo vacío
+        wsActive: '', //   círculo lleno
+        spotify: '', //
+        paused: '', //
+        cpu: '', //
+        memory: '', //
+        volMuted: '\u{f0581}', // 󰖁
+        headphone: '\u{f02cb}', // 󰋋
+        vol: ['\u{f057f}', '\u{f0580}', '\u{f057e}'], // 󰕿 󰖀 󰕾
+        charging: '\u{f0084}', // 󰂄
+        bat: ['\u{f008e}', '\u{f007a}', '\u{f007b}', '\u{f007c}', '\u{f007d}', '\u{f007e}',
+              '\u{f007f}', '\u{f0080}', '\u{f0081}', '\u{f0082}', '\u{f0079}'],
+      };
+      const PERSISTENT_WS = ['1', '2', '3', '4', '5'];
+
+      const providers = zebar.createProviderGroup({
+        glazewm: { type: 'glazewm' },
+        systray: { type: 'systray' },
+        media: { type: 'media' },
+        time: { type: 'date', formatting: 'HH:mm' },
+        date: { type: 'date', formatting: 'ccc, LLL dd', locale: 'en' },
+        dateLong: { type: 'date', formatting: 'cccc, dd LLLL yyyy', locale: 'es' },
+        ec: { type: 'date', formatting: 'HH:mm', timezone: 'America/Guayaquil' },
+        cpu: { type: 'cpu', refreshInterval: 1000 },
+        memory: { type: 'memory', refreshInterval: 2000 },
+        audio: { type: 'audio' },
+        battery: { type: 'battery', refreshInterval: 5000 },
+      });
+
+      const $ = id => document.getElementById(id);
+      const settings = uri => zebar.shellExec('explorer', uri).catch(() => {});
+
+      // ---------- workspaces (persistentes 1-5, como en Waybar) ----------
+      function renderWorkspaces(gw) {
+        const el = $('workspaces');
+        if (!gw) { el.innerHTML = ''; return; }
+        const existing = new Map(gw.allWorkspaces.map(w => [w.name, w]));
+        const names = [...new Set([...PERSISTENT_WS, ...existing.keys()])]
+          .sort((a, b) => Number(a) - Number(b));
+        el.replaceChildren(...names.map(name => {
+          const ws = existing.get(name);
+          const active = ws && (ws.hasFocus || (ws.isDisplayed && gw.currentWorkspaces.includes(ws)));
+          const b = document.createElement('button');
+          b.className = active ? 'active' : '';
+          b.textContent = active ? I.wsActive : I.wsDefault;
+          b.title = `Workspace ${name}`;
+          b.onclick = () => gw.runCommand(`focus --workspace ${name}`);
+          return b;
+        }));
+      }
+
+      // ---------- tray ----------
+      let trayHash = '';
+      function renderTray(tray) {
+        const el = $('tray');
+        if (!tray) return;
+        const hash = tray.icons.map(i => i.id + i.iconHash).join();
+        if (hash === trayHash) return;
+        trayHash = hash;
+        el.replaceChildren(...tray.icons.map(icon => {
+          const img = document.createElement('img');
+          img.src = icon.iconUrl;
+          img.title = icon.tooltip;
+          img.onclick = e => { e.preventDefault(); tray.onLeftClick(icon.id); };
+          img.oncontextmenu = e => { e.preventDefault(); tray.onRightClick(icon.id); };
+          img.onauxclick = e => { if (e.button === 1) tray.onMiddleClick(icon.id); };
+          img.onmouseenter = () => tray.onHoverEnter(icon.id);
+          img.onmouseleave = () => tray.onHoverLeave(icon.id);
+          return img;
+        }));
+        el.style.display = tray.icons.length ? '' : 'none';
+      }
+
+      // ---------- mpris (Spotify) ----------
+      function renderMedia(media) {
+        const el = $('media');
+        const s = media?.currentSession;
+        if (!s || !s.title) { el.style.display = 'none'; return; }
+        el.style.display = '';
+        el.className = 'module media' + (s.isPlaying ? '' : ' paused');
+        const text = [s.artist, s.title].filter(Boolean).join(' - ');
+        el.innerHTML = '';
+        el.append((s.isPlaying ? I.spotify : I.paused) + ' ');
+        const t = document.createElement('span');
+        t.className = 'title';
+        t.textContent = text;
+        el.append(t);
+        el.title = `${s.artist ?? ''} - ${s.title}\n${s.albumTitle ?? ''}`;
+        el.onclick = () => media.togglePlayPause();
+        el.onauxclick = e => { if (e.button === 1) media.next(); };
+        el.oncontextmenu = e => { e.preventDefault(); media.previous(); };
+      }
+
+      // ---------- audio ----------
+      function renderAudio(audio) {
+        const el = $('audio');
+        const d = audio?.defaultPlaybackDevice;
+        if (!d) { el.style.display = 'none'; return; }
+        el.style.display = '';
+        const vol = Math.round(d.volume);
+        const isHeadphone = /auricular|headphone|headset|buds/i.test(d.name);
+        const icon = d.isMuted ? I.volMuted
+          : isHeadphone ? I.headphone
+          : I.vol[Math.min(2, Math.floor(vol / 34))];
+        el.classList.toggle('muted', d.isMuted);
+        el.textContent = d.isMuted ? `${I.volMuted} muted` : `${icon} ${vol}%`;
+        el.title = d.name;
+      }
+      $('audio').onclick = () => settings('ms-settings:apps-volume');
+      $('audio').oncontextmenu = e => {
+        e.preventDefault();
+        const d = providers.outputMap.audio?.defaultPlaybackDevice;
+        if (d) providers.outputMap.audio.setMute(!d.isMuted);
+      };
+      $('audio').onwheel = e => {
+        const a = providers.outputMap.audio;
+        const d = a?.defaultPlaybackDevice;
+        if (!d) return;
+        const v = Math.max(0, Math.min(100, Math.round(d.volume) + (e.deltaY < 0 ? 5 : -5)));
+        a.setVolume(v);
+      };
+
+      // ---------- batería ----------
+      function renderBattery(b) {
+        const el = $('battery');
+        if (!b) { el.style.display = 'none'; return; }
+        el.style.display = '';
+        const c = Math.round(b.chargePercent);
+        const state = c >= 95 ? 'full' : c <= 20 ? 'critical' : c <= 30 ? 'warning' : 'good';
+        el.className = `module battery ${state}`;
+        const icon = b.isCharging || b.state === 'full'
+          ? I.charging
+          : I.bat[Math.min(10, Math.floor(c / 10))];
+        el.textContent = `${icon} ${c}%`;
+        const mins = b.isCharging ? b.timeTillFull : b.timeTillEmpty;
+        el.title = mins ? `${Math.floor(mins / 3600000)}h ${Math.round((mins % 3600000) / 60000)}min` : '';
+      }
+      $('battery').onclick = () => settings('ms-settings:batterysaver');
+
+      function render() {
+        const o = providers.outputMap;
+        renderWorkspaces(o.glazewm);
+        renderTray(o.systray);
+        renderMedia(o.media);
+
+        $('time').textContent = o.time?.formatted ?? '';
+        $('date').textContent = o.date?.formatted ?? '';
+        $('date').title = o.dateLong?.formatted ?? '';
+        $('ec').textContent = o.ec?.formatted ?? '';
+
+        if (o.cpu) $('cpu').textContent = `${I.cpu}  ${Math.round(o.cpu.usage)}%`;
+        if (o.memory) $('memory').textContent = `${I.memory}  ${(o.memory.usedMemory / 1024 ** 3).toFixed(1)} GB`;
+        renderAudio(o.audio);
+        renderBattery(o.battery);
+      }
+
+      providers.onOutput(render);
+      render();
+    </script>
+  </body>
+</html>

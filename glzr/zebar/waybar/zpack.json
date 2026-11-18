@@ -1,0 +1,47 @@
+{
+  "$schema": "https://github.com/glzr-io/zebar/raw/v3.3.1/resources/zpack-schema.json",
+  "name": "waybar",
+  "version": "1.0.0",
+  "description": "Barra superior que replica la Waybar de Hyprland (Catppuccin Mocha, fondo negro).",
+  "tags": ["topbar"],
+  "previewImages": [],
+  "repositoryUrl": "",
+  "widgets": [
+    {
+      "name": "bar",
+      "htmlPath": "./bar.html",
+      "zOrder": "top_most",
+      "shownInTaskbar": false,
+      "focused": false,
+      "resizable": false,
+      "transparent": false,
+      "includeFiles": ["*.html", "*.css", "*.js"],
+      "caching": {
+        "defaultDuration": 604800,
+        "rules": []
+      },
+      "privileges": {
+        "shellCommands": [
+          { "program": "explorer", "argsRegex": "^ms-settings:[a-z-]+$" },
+          { "program": "explorer", "argsRegex": "^ms-actioncenter:$" }
+        ]
+      },
+      "presets": [
+        {
+          "name": "default",
+          "anchor": "top_left",
+          "offsetX": "0px",
+          "offsetY": "0px",
+          "width": "100%",
+          "height": "35px",
+          "monitorSelection": { "type": "all" },
+          "dockToEdge": {
+            "enabled": true,
+            "edge": "top",
+            "windowMargin": "0px"
+          }
+        }
+      ]
+    }
+  ]
+}

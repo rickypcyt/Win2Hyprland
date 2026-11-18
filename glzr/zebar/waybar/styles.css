@@ -1,0 +1,91 @@
+/* Barra estilo Waybar — Catppuccin Mocha sobre negro.
+   Colores copiados de ~/.config/waybar/style.css de Hyprland. */
+:root {
+  --text: rgb(205, 214, 244);
+  --subtext1: rgb(186, 194, 222);
+  --overlay0: rgb(108, 112, 134);
+  --surface1: rgb(69, 71, 90);
+  --blue: rgb(137, 180, 250);
+  --red: rgb(243, 139, 168);
+  --peach: rgb(250, 179, 135);
+  --green: rgb(166, 227, 161);
+  --bg: #000000;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrainsMono Nerd Font', 'JetBrainsMono NF', monospace;
+  font-size: 15px;
+  font-weight: 600;
+  overflow: hidden;
+  user-select: none;
+}
+
+#bar {
+  height: 35px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.left,
+.center,
+.right {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-width: 0;
+}
+.center { justify-content: center; }
+.right  { justify-content: flex-end; }
+
+.module {
+  padding: 0 8px;
+  margin: 0 2px;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+/* ---------- workspaces ---------- */
+.workspaces { display: flex; align-items: center; }
+.workspaces button {
+  padding: 0 8px;
+  margin: 0 2px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.workspaces button.active { color: var(--blue); }
+.workspaces button:hover { color: var(--text); }
+
+/* ---------- tray ---------- */
+.tray { display: flex; align-items: center; gap: 7px; }
+.tray img { width: 16px; height: 16px; cursor: pointer; }
+
+/* ---------- mpris ---------- */
+.media { cursor: pointer; overflow: hidden; text-overflow: ellipsis; max-width: 40ch; }
+.media.paused .title { font-style: italic; }
+
+/* ---------- centro ---------- */
+.sep { padding: 0 4px; color: var(--overlay0); }
+
+/* ---------- derecha ---------- */
+.audio { cursor: pointer; }
+.audio.muted { color: var(--subtext1); }
+
+.battery.full     { color: var(--green); }
+.battery.good     { color: var(--blue); }
+.battery.warning  { color: var(--peach); }
+.battery.critical { color: var(--red); }
