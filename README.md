@@ -1,168 +1,168 @@
 # Win2Hyprland
 
-**Mi config de Hyprland, literal, puesta en Windows 11.**
+**My Hyprland config, literally, ported to Windows 11.**
 
-Usaba Linux con Hyprland y me pasé a Windows. Pero no quería perder la forma de trabajar: ventanas en mosaico automático, workspaces con `Alt+número`, todo con el teclado y una barra arriba igual que mi Waybar. Este repo es eso: cogí mi `hyprland.conf` y mi Waybar y los traduje atajo por atajo a herramientas que funcionan en Windows.
+I used Linux with Hyprland and switched to Windows. But I didn't want to lose my workflow: automatic window tiling, workspaces on `Alt+number`, everything from the keyboard, and a top bar just like my Waybar. This repo is exactly that: I took my `hyprland.conf` and my Waybar and translated them, shortcut by shortcut, to tools that run on Windows.
 
-Va rápido y funciona bien en el día a día. Puedo hacer mi manía de pulsar `Alt+1234 4321` a toda velocidad sin que nada se rompa (más abajo explico cómo).
+It's fast and works well day to day. I can indulge my habit of hammering `Alt+1234 4321` at full speed without anything breaking (I explain how below).
 
-`hyprland-reference.conf` es mi config original de Hyprland, para comparar.
+`hyprland-reference.conf` is my original Hyprland config, for comparison.
 
 ---
 
-## Qué usa (y a qué equivale en Linux)
+## What it uses (and its Linux equivalent)
 
-| En Hyprland | En Windows | Archivo |
+| On Hyprland | On Windows | File |
 |---|---|---|
-| Hyprland (tiling, workspaces, atajos) | [GlazeWM](https://github.com/glzr-io/glazewm) | `glzr/glazewm/config.yaml` |
-| Waybar | [Zebar](https://github.com/glzr-io/zebar) con un pack propio | `glzr/zebar/waybar/` |
+| Hyprland (tiling, workspaces, shortcuts) | [GlazeWM](https://github.com/glzr-io/glazewm) | `glzr/glazewm/config.yaml` |
+| Waybar | [Zebar](https://github.com/glzr-io/zebar) with a custom pack | `glzr/zebar/waybar/` |
 | `playerctl`, `swayosd`, `grim`/`slurp`… | [AutoHotkey v2](https://www.autohotkey.com/) | `ahk/hotkeys.ahk` |
 | kitty | [WezTerm](https://wezfurlong.org/wezterm/) | `wezterm/wezterm.lua` |
-| rofi | [Flow Launcher](https://www.flowlauncher.com/) | — (su propia config) |
+| rofi | [Flow Launcher](https://www.flowlauncher.com/) | — (its own config) |
 
-## Cómo se ve
+## What it looks like
 
-- **Mosaico automático** con `gaps_in = 5` y `gaps_out = 10`, igual que en Hyprland.
-- **Esquinas redondeadas**, sin bordes ni barras de título.
-- **Sin transparencia**: todas las ventanas opacas (en Hyprland tenía `inactive_opacity = 0.9`, aquí lo quité).
-- **El foco sigue al ratón**, como `follow_mouse = 1`.
-- **Workspaces fijos por monitor:** el 1 en el monitor externo y del 2 al 5 en la pantalla del portátil, como tenía con `workspace = N, monitor:…`.
-- **Barra superior negra de 35 px**, con JetBrainsMono Nerd Font y colores Catppuccin Mocha, igual que mi Waybar.
+- **Automatic tiling** with `gaps_in = 5` and `gaps_out = 10`, same as in Hyprland.
+- **Rounded corners**, no borders or title bars.
+- **No transparency**: all windows are opaque (in Hyprland I had `inactive_opacity = 0.9`; I dropped it here).
+- **Focus follows the mouse**, like `follow_mouse = 1`.
+- **Workspaces pinned per monitor:** 1 on the external monitor and 2 to 5 on the laptop screen, as I had with `workspace = N, monitor:…`.
+- **35 px black top bar**, with JetBrainsMono Nerd Font and Catppuccin Mocha colors, just like my Waybar.
 
 ---
 
-## Atajos
+## Shortcuts
 
-La lógica es la misma que en Hyprland:
+The logic is the same as in Hyprland:
 
-- **`Win`** (`$mainMod`): abrir apps y manejar ventanas.
+- **`Win`** (`$mainMod`): open apps and manage windows.
 - **`Alt`** (`$altMod`): workspaces.
-- **`Ctrl+Alt`**: multimedia, brillo y utilidades.
-- **`Ctrl+Alt+Shift`**: control del propio gestor de ventanas.
+- **`Ctrl+Alt`**: media, brightness and utilities.
+- **`Ctrl+Alt+Shift`**: control of the window manager itself.
 
-### Aplicaciones
+### Applications
 
-| Atajo | Abre | En Hyprland era |
+| Shortcut | Opens | On Hyprland it was |
 |---|---|---|
 | `Win+Enter` | WezTerm | kitty |
-| `Win+Space` | Flow Launcher (también `Alt+Space`) | rofi -show drun |
-| `Win+E` | Explorador de archivos | thunar |
+| `Win+Space` | Flow Launcher (also `Alt+Space`) | rofi -show drun |
+| `Win+E` | File Explorer | thunar |
 | `Win+F` | Brave | brave |
-| `Win+C` | WezTerm con Neovim | kitty nvim |
+| `Win+C` | WezTerm with Neovim | kitty nvim |
 | `Win+O` | Obsidian | obsidian |
 | `Win+S` | Spotify | spotify |
 | `Win+Z` | WhatsApp | zapzap |
 | `Win+Shift+D` | Discord | discord |
-| `Win+N` | Ajustes de Wi-Fi | nmtui |
-| `Win+B` | Ajustes de Bluetooth | blueman-manager |
-| `Win+V` | Mezclador de volumen | pavucontrol |
-| `Win+T` | Ajustes del touchpad | toggle-touchpad.sh |
-| `Win+Q` | Bloquear la sesión | hyprlock |
+| `Win+N` | Wi-Fi settings | nmtui |
+| `Win+B` | Bluetooth settings | blueman-manager |
+| `Win+V` | Volume mixer | pavucontrol |
+| `Win+T` | Touchpad settings | toggle-touchpad.sh |
+| `Win+Q` | Lock the session | hyprlock |
 
-### Ventanas
+### Windows
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `Alt+W` | Cerrar la ventana |
-| `Win+I` | Alternar flotante / mosaico |
-| `Win+↑` | Pantalla completa |
-| `Win+←` / `Win+→` | Mover la ventana a izquierda / derecha |
-| `Win+Shift+←↑→↓` | Mover la ventana en esa dirección |
-| `Win+M` | Cambiar la dirección del mosaico (horizontal / vertical) |
+| `Alt+W` | Close the window |
+| `Win+I` | Toggle floating / tiling |
+| `Win+↑` | Fullscreen |
+| `Win+←` / `Win+→` | Move the window left / right |
+| `Win+Shift+←↑→↓` | Move the window in that direction |
+| `Win+M` | Change the tiling direction (horizontal / vertical) |
 
 ### Workspaces
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `Alt+1` … `Alt+9`, `Alt+0` | Ir al workspace 1…10 |
-| `Alt+Shift+1` … `Alt+Shift+0` | Mover la ventana a ese workspace e ir con ella |
+| `Alt+1` … `Alt+9`, `Alt+0` | Go to workspace 1…10 |
+| `Alt+Shift+1` … `Alt+Shift+0` | Move the window to that workspace and follow it |
 
-### Monitores
+### Monitors
 
-| Atajo | Acción | En Hyprland era |
+| Shortcut | Action | On Hyprland it was |
 |---|---|---|
-| `Win+Ctrl+L` | Solo el monitor externo | `Win+L` (extonly) |
-| `Win+Shift+L` | Extender a los dos monitores | `Win+Shift+L` (bothmons) |
-| `Ctrl+Alt+M` | Selector de pantallas de Windows | monitors.sh |
+| `Win+Ctrl+L` | External monitor only | `Win+L` (extonly) |
+| `Win+Shift+L` | Extend to both monitors | `Win+Shift+L` (bothmons) |
+| `Ctrl+Alt+M` | Windows display switcher | monitors.sh |
 
-`Win+L` no se puede usar porque Windows lo reserva para bloquear la sesión.
+`Win+L` can't be used because Windows reserves it for locking the session.
 
-### Multimedia, brillo y capturas (AutoHotkey)
+### Media, brightness and screenshots (AutoHotkey)
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `Ctrl+Alt+P` | Reproducir / pausar |
-| `Ctrl+Alt+N` | Siguiente canción |
-| `Ctrl+Alt+]` o `Ctrl+Alt+'` | Subir el brillo un 5 % |
-| `Ctrl+Alt+[` o `Ctrl+Alt+;` | Bajar el brillo un 5 % |
-| `Ctrl+Alt+U` | Captura de una zona al portapapeles (antes grim + slurp) |
-| `Ctrl+Alt+0` | Ajustes de luz nocturna |
+| `Ctrl+Alt+P` | Play / pause |
+| `Ctrl+Alt+N` | Next track |
+| `Ctrl+Alt+]` or `Ctrl+Alt+'` | Brightness up 5 % |
+| `Ctrl+Alt+[` or `Ctrl+Alt+;` | Brightness down 5 % |
+| `Ctrl+Alt+U` | Screenshot of a region to the clipboard (formerly grim + slurp) |
+| `Ctrl+Alt+0` | Night light settings |
 
-Las teclas multimedia y de brillo del teclado funcionan como siempre.
+The keyboard's media and brightness keys work as usual.
 
 ### GlazeWM
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `Ctrl+Alt+Shift+R` | Recargar la config |
-| `Ctrl+Alt+Shift+E` | Salir de GlazeWM |
-| `Ctrl+Alt+Shift+Space` | Pausar / reanudar el mosaico |
+| `Ctrl+Alt+Shift+R` | Reload the config |
+| `Ctrl+Alt+Shift+E` | Quit GlazeWM |
+| `Ctrl+Alt+Shift+Space` | Pause / resume tiling |
 
-### Terminal (WezTerm, mi kitty.conf traducido)
+### Terminal (WezTerm, my kitty.conf translated)
 
-Mismo estilo que mi kitty:
-- JetBrainsMono Nerd Font a 16.
-- Fondo negro sólido (sin transparencia) y mi paleta de 16 colores.
-- Cursor de bloque y padding de 5.
-- Pestañas arriba en estilo powerline (solo aparecen con dos o más).
+Same style as my kitty:
+- JetBrainsMono Nerd Font at 16.
+- Solid black background (no transparency) and my 16-color palette.
+- Block cursor and padding of 5.
+- Tabs on top in powerline style (only shown with two or more).
 
-| Atajo | Acción |
+| Shortcut | Action |
 |---|---|
-| `Ctrl+Alt+T` / `Ctrl+Alt+O` | Dividir: nueva terminal al lado |
-| `Ctrl+Alt+Y` | Dividir: nueva terminal debajo |
-| `Ctrl+Shift+←↑→↓` | Moverse entre divisiones |
-| `Ctrl+Shift+Alt+←↑→↓` | Redimensionar la división |
-| `Ctrl+Shift+W` | Cerrar la división activa |
-| `Ctrl+Alt+N` | Nueva pestaña (lo intercepta "siguiente canción" de AutoHotkey, igual que pasaba en Hyprland) |
-| `Ctrl+Shift+T` | Nueva pestaña (atajo de WezTerm que sí funciona) |
-| `Ctrl+PageUp` / `Ctrl+PageDown` | Pestaña anterior / siguiente |
+| `Ctrl+Alt+T` / `Ctrl+Alt+O` | Split: new terminal to the side |
+| `Ctrl+Alt+Y` | Split: new terminal below |
+| `Ctrl+Shift+←↑→↓` | Move between splits |
+| `Ctrl+Shift+Alt+←↑→↓` | Resize the split |
+| `Ctrl+Shift+W` | Close the active split |
+| `Ctrl+Alt+N` | New tab (intercepted by AutoHotkey's "next track", same as on Hyprland) |
+| `Ctrl+Shift+T` | New tab (WezTerm shortcut that does work) |
+| `Ctrl+PageUp` / `Ctrl+PageDown` | Previous / next tab |
 
 ---
 
-## La barra (Zebar, estilo Waybar)
+## The bar (Zebar, Waybar style)
 
-Tiene los mismos módulos que mi Waybar:
+It has the same modules as my Waybar:
 
-- **Izquierda:**
-  - Workspaces del 1 al 5, siempre visibles. El activo aparece en azul y puedes hacer clic para cambiar.
-  - Bandeja del sistema.
-  - Spotify: clic para pausar o reanudar, clic central para la siguiente, clic derecho para la anterior. En pausa sale en cursiva.
-- **Centro:** hora `|` fecha `|` hora de Ecuador.
-- **Derecha:**
-  - CPU y RAM.
-  - Volumen: la rueda lo sube o baja, el clic derecho silencia y el clic izquierdo abre el mezclador.
-  - Batería, con colores según la carga: verde, azul, melocotón o rojo.
+- **Left:**
+  - Workspaces 1 to 5, always visible. The active one is shown in blue and you can click to switch.
+  - System tray.
+  - Spotify: click to pause or resume, middle-click for next, right-click for previous. Shown in italics when paused.
+- **Center:** time `|` date `|` Ecuador time.
+- **Right:**
+  - CPU and RAM.
+  - Volume: the scroll wheel raises or lowers it, right-click mutes, and left-click opens the mixer.
+  - Battery, colored by charge level: green, blue, peach or red.
 
-La barra queda anclada arriba y Windows le reserva su espacio, así que las ventanas nunca se meten debajo.
+The bar is docked at the top and Windows reserves its space, so windows never slide underneath it.
 
-Comparada con mi Waybar le faltan la temperatura de CPU y el brillo, porque Zebar no tiene de dónde sacar esos datos.
-
----
-
-## Por qué no se rompe al pulsar rápido
-
-En Hyprland podía machacar `Alt+1234 4321` y no pasaba nada, porque el propio compositor gestiona los workspaces. En Windows, GlazeWM tiene que ocultar y mostrar cada ventana a mano. Si las teclas llegan más rápido de lo que tarda, se perdían pulsaciones, el foco se quedaba en una ventana oculta y la barra se desincronizaba.
-
-Lo solucioné con dos cambios:
-
-1. **`Alt+número` lo gestiona AutoHotkey, no GlazeWM.** Si GlazeWM está libre, el cambio se manda al instante. Si está ocupado, solo se guarda la última tecla pulsada y se manda al terminar. Las intermedias se descartan, así que no se acumula nada y siempre terminas en el último workspace que pulsaste.
-2. **La barra habla directamente con GlazeWM** por su WebSocket (`localhost:6123`), sin pasar por el módulo de Zebar, que se congelaba. Vuelve a consultar el estado con cada evento, comprueba cada 500 ms por si se pierde alguno y se reconecta sola si GlazeWM se reinicia.
-
-Probado con ráfagas simuladas de hasta 49 pulsaciones en menos de 300 ms. Siempre termina en el workspace correcto, con el foco bien puesto y la barra sincronizada.
+Compared to my Waybar it lacks CPU temperature and brightness, because Zebar has no source for that data.
 
 ---
 
-## Instalación
+## Why it doesn't break when typing fast
+
+On Hyprland I could hammer `Alt+1234 4321` and nothing happened, because the compositor itself manages workspaces. On Windows, GlazeWM has to hide and show every window manually. If keys arrived faster than it could keep up, keystrokes got lost, focus stayed on a hidden window, and the bar got out of sync.
+
+I fixed it with two changes:
+
+1. **`Alt+number` is handled by AutoHotkey, not GlazeWM.** If GlazeWM is idle, the switch is sent instantly. If it's busy, only the last key pressed is kept and sent when it finishes. The intermediate ones are discarded, so nothing piles up and you always end up on the last workspace you pressed.
+2. **The bar talks directly to GlazeWM** over its WebSocket (`localhost:6123`), bypassing Zebar's module, which used to freeze. It re-queries the state on every event, checks every 500 ms in case one is missed, and reconnects on its own if GlazeWM restarts.
+
+Tested with simulated bursts of up to 49 keystrokes in under 300 ms. It always lands on the correct workspace, with focus in the right place and the bar in sync.
+
+---
+
+## Installation
 
 ```powershell
 winget install glzr-io.glazewm
@@ -174,35 +174,35 @@ winget install Neovim.Neovim
 winget install DEVCOM.JetBrainsMonoNerdFont
 ```
 
-Clona el repo en `C:\Users\<tu usuario>\Win2Hyprland` y enlaza las carpetas de config con junctions (no necesitan permisos de administrador):
+Clone the repo into `C:\Users\<your user>\Win2Hyprland` and link the config folders with junctions (no admin rights needed):
 
 ```powershell
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.glzr" -Target "$env:USERPROFILE\Win2Hyprland\glzr"
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.config\wezterm" -Target "$env:USERPROFILE\Win2Hyprland\wezterm"
 ```
 
-Después abre GlazeWM. Él lanza Zebar y los atajos de AutoHotkey.
+Then open GlazeWM. It launches Zebar and the AutoHotkey shortcuts.
 
-Algunas rutas de `glzr/glazewm/config.yaml` llevan mi usuario (`C:/Users/ricar/...`): el script de AutoHotkey, Brave, Obsidian, Discord y Flow Launcher. Cámbialas por las tuyas. Los índices de monitor de `bind_to_monitor` dependen de tu configuración de pantallas; los ves con `glazewm query monitors`.
+Some paths in `glzr/glazewm/config.yaml` contain my username (`C:/Users/ricar/...`): the AutoHotkey script, Brave, Obsidian, Discord and Flow Launcher. Replace them with yours. The monitor indices in `bind_to_monitor` depend on your display setup; you can see them with `glazewm query monitors`.
 
-## Estructura
+## Structure
 
 ```
 Win2Hyprland/
 ├── glzr/
-│   ├── glazewm/config.yaml   ← tiling, gaps, workspaces, atajos
+│   ├── glazewm/config.yaml   ← tiling, gaps, workspaces, shortcuts
 │   └── zebar/
-│       ├── settings.json     ← qué barra arranca
-│       └── waybar/           ← la barra: bar.html, styles.css, zpack.json
-├── ahk/hotkeys.ahk           ← Alt+número, multimedia, brillo, capturas
+│       ├── settings.json     ← which bar starts
+│       └── waybar/           ← the bar: bar.html, styles.css, zpack.json
+├── ahk/hotkeys.ahk           ← Alt+number, media, brightness, screenshots
 ├── wezterm/wezterm.lua       ← terminal
-├── hyprland-reference.conf   ← mi config original de Hyprland
-└── CLAUDE.md                 ← notas para editar la config con Claude Code
+├── hyprland-reference.conf   ← my original Hyprland config
+└── CLAUDE.md                 ← notes for editing the config with Claude Code
 ```
 
-## Lo que no se puede igualar
+## What can't be matched
 
-- **Blur:** Windows no lo permite.
-- **Dwindle:** GlazeWM no divide en espiral automáticamente; coloca cada ventana nueva en la dirección actual del mosaico (`Win+M` la cambia).
-- **`Win+L`:** reservado por Windows.
-- **Sin equivalente por ahora:** ocultar la barra (`Win+P`), menú de apagado (`Win+Escape`), cambiar la salida de audio (`Ctrl+Alt+V`) y perfil de energía (`Ctrl+Alt+B`).
+- **Blur:** Windows doesn't allow it.
+- **Dwindle:** GlazeWM doesn't split in a spiral automatically; it places each new window in the current tiling direction (`Win+M` changes it).
+- **`Win+L`:** reserved by Windows.
+- **No equivalent yet:** hiding the bar (`Win+P`), power menu (`Win+Escape`), switching audio output (`Ctrl+Alt+V`) and power profile (`Ctrl+Alt+B`).
