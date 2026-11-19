@@ -44,10 +44,32 @@ bindkey '^[[B' down-line-or-beginning-search
 # ---------- Preferencias ----------
 export EDITOR=nvim
 export VISUAL=nvim
-alias ls='ls --color=auto'
+alias ls='ls --color=auto -a'   # ls = ls -a (muestra también los ocultos)
 alias ll='ls -lh'
 alias la='ls -lhA'
 alias grep='grep --color=auto'
+
+# ---------- Herramientas de Windows sin escribir .exe ----------
+# WSL puede ejecutar programas de Windows, pero solo con la extensión
+# (keytool.exe, no keytool). Si un comando no existe en Linux, se busca su
+# versión de Windows (.exe, y si no .cmd/.bat vía cmd.exe) y se ejecuta.
+# Los comandos de Linux siempre tienen prioridad.
+command_not_found_handler() {
+  local cmd=$1 win
+  shift
+  if win=$(whence -p -- "$cmd.exe"); then
+    "$win" "$@"
+    return $?
+  fi
+  for ext in cmd bat; do
+    if whence -p -- "$cmd.$ext" >/dev/null; then
+      cmd.exe /c "$cmd.$ext" "$@"
+      return $?
+    fi
+  done
+  print -u2 "zsh: command not found: $cmd"
+  return 127
+}
 
 # ---------- Colores de ls ----------
 # Los archivos de Windows (/mnt/c) se ven como "escribibles por todos" y
