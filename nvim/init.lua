@@ -7,10 +7,16 @@ local function arch_shell(dir, ...)
         return vim.list_extend({ TERM, "-e", "wsl.exe", "-d", "archlinux", "-u", "ricky", "--cd", dir }, { ... })
 end
 
--- Abrir una terminal en la carpeta del archivo actual: zsh de Arch, desde Windows o desde Arch.
+-- Abrir una terminal en la carpeta del archivo actual.
+-- Windows: Alacritty con su shell por defecto (PowerShell 7). Arch: zsh de Arch.
 -- :Kitty se mantiene por costumbre; :Term hace lo mismo.
 local function open_terminal()
-        vim.fn.jobstart(arch_shell(vim.fn.expand("%:p:h")), { detach = true })
+        local dir = vim.fn.expand("%:p:h")
+        if IS_WIN then
+                vim.fn.jobstart({ TERM, "--working-directory", dir }, { detach = true })
+        else
+                vim.fn.jobstart(arch_shell(dir), { detach = true })
+        end
 end
 vim.api.nvim_create_user_command("Kitty", open_terminal, { desc = "Terminal en la carpeta del archivo" })
 vim.api.nvim_create_user_command("Term", open_terminal, { desc = "Terminal en la carpeta del archivo" })

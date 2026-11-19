@@ -8,34 +8,37 @@
 
 [general]
 live_config_reload = true
+working_directory = 'C:\Users\ricar'   # carpeta inicial (comillas simples: sin escapes)
 
 # ---------- Shell ----------
-# Igual que WezTerm: zsh en WSL Arch como ricky, empezando en C:\Users\ricar.
-# Para PowerShell 7 en su lugar:  program = "pwsh.exe"  args = ["-NoLogo"]
+# PowerShell 7, empezando en C:\Users\ricar.
+# Para zsh de WSL Arch en su lugar:
+#   program = "wsl.exe"
+#   args = ["-d", "archlinux", "-u", "ricky", "--cd", "/mnt/c/Users/ricar"]
 [terminal.shell]
-program = "wsl.exe"
-args = ["-d", "archlinux", "-u", "ricky", "--cd", "/mnt/c/Users/ricar"]
+program = "pwsh.exe"
+args = ["-NoLogo"]
 
 # ---------- Fuente ----------
-# Si no la encuentra, prueba family = "JetBrainsMono NF"
-# (nombre con el que se registra en algunas versiones de la Nerd Font).
+# En Windows la Nerd Font se registra como "JetBrainsMono NF" (no existe
+# "JetBrainsMono Nerd Font"; con ese nombre Alacritty usaba su fuente de reserva).
 [font]
 size = 16.0
 
 [font.normal]
-family = "JetBrainsMono Nerd Font"
+family = "JetBrainsMono NF"
 style = "Regular"
 
 [font.bold]
-family = "JetBrainsMono Nerd Font"
+family = "JetBrainsMono NF"
 style = "Bold"
 
 [font.italic]
-family = "JetBrainsMono Nerd Font"
+family = "JetBrainsMono NF"
 style = "Italic"
 
 [font.bold_italic]
-family = "JetBrainsMono Nerd Font"
+family = "JetBrainsMono NF"
 style = "Bold Italic"
 
 # ---------- Colores ----------

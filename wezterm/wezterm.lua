@@ -10,8 +10,8 @@ local config = wezterm.config_builder()
 -- Fuera de WSL: PowerShell 7 (pwsh). PowerShell 5.1 se rompía más al redimensionar.
 config.default_prog = { 'pwsh.exe', '-NoLogo' }
 
--- Linux: WezTerm abre directamente zsh en WSL Arch, como usuario ricky,
--- empezando en tu carpeta de usuario de Windows (/mnt/c/Users/ricar).
+-- Shell por defecto: PowerShell 7 (default_prog arriba). Arch queda disponible
+-- en el menú Ctrl+Shift+L, como usuario ricky en /mnt/c/Users/ricar.
 -- El dominio se define a mano: wezterm.default_wsl_domains() ejecutaba
 -- wsl.exe en cada arranque (~100 ms).
 config.wsl_domains = {
@@ -22,7 +22,7 @@ config.wsl_domains = {
     default_cwd = '/mnt/c/Users/ricar',
   },
 }
-config.default_domain = 'WSL:archlinux'
+-- Para abrir Arch por defecto: config.default_domain = 'WSL:archlinux'
 
 -- Menú para elegir shell: Ctrl+Shift+L
 config.launch_menu = {

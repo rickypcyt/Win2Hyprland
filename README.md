@@ -113,7 +113,7 @@ The keyboard's media and brightness keys work as usual.
 
 ### Terminal (Alacritty)
 
-`Win+Enter` opens **Alacritty**: the window shows up in about 30-130 ms, versus ~2 s for WezTerm, which is the closest thing to kitty's instant startup. It has the same look as my kitty/WezTerm: JetBrainsMono Nerd Font 16, solid black background, my 16-color palette, block cursor, padding 5, no title bar. It starts **zsh in WSL Arch as ricky in my Windows user folder**. Alacritty has no tabs or splits; GlazeWM tiles the windows instead. `Ctrl+Shift+N` opens a new window.
+`Win+Enter` opens **Alacritty**: the window shows up in about 30-130 ms, versus ~2 s for WezTerm, which is the closest thing to kitty's instant startup. It has the same look as my kitty/WezTerm: JetBrainsMono Nerd Font 16, solid black background, my 16-color palette, block cursor, padding 5, no title bar. It starts **PowerShell 7 in my Windows user folder** (zsh in WSL Arch is still set up; `wsl` opens it). Alacritty has no tabs or splits; GlazeWM tiles the windows instead. `Ctrl+Shift+N` opens a new window.
 
 ### Terminal (WezTerm, my kitty.conf translated)
 
@@ -123,7 +123,7 @@ Same style as my kitty:
 - Block cursor and padding of 5.
 - Tabs on top in powerline style (only shown with two or more).
 
-**Linux commands:** WezTerm opens **zsh inside WSL2 (Arch Linux)** by default, so it feels like the terminal I had on Linux. The zsh config is lean, without Oh My Zsh, and starts in ~25 ms; AutoHotkey keeps Arch running in the background so there's no multi-second cold start. Windows-only things (Neovim with `Win+C`, `:GCC`) are launched in the local Windows domain.
+**Linux commands:** WezTerm opens PowerShell 7 by default; `Ctrl+Shift+L` opens **zsh inside WSL2 (Arch Linux)** in a new tab. The zsh config is lean, without Oh My Zsh, and starts in ~25 ms. If Arch is stopped, its first shell takes a couple of seconds to boot WSL.
 
 The prompt looks like PowerShell's: `C:\Users\ricar>` when you're in a Windows folder (`/mnt/c/...`), and the plain Linux path in Linux folders. `~/.zshrc` is a symlink to `zsh/zshrc` in this repo.
 

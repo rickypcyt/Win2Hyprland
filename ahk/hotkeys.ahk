@@ -22,10 +22,6 @@ WS_PIPE := "\\.\pipe\win2hyprland-ws"
 ; Arrancar el puente (si ya hay uno corriendo, el nuevo sale solo).
 Run 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' A_ScriptDir '\glaze-bridge.ps1"', , "Hide"
 
-; Mantener WSL Arch encendido para que WezTerm abra al instante (si Arch está
-; apagado, la primera terminal tarda varios segundos en arrancar la VM).
-; Un "sleep infinity" oculto lo mantiene vivo; si ya existe, no se crea otro.
-Run 'wsl.exe -d archlinux -u ricky --exec bash -c "pgrep -f ^w2h-keepalive >/dev/null || exec -a w2h-keepalive sleep infinity"', , "Hide"
 
 global WsPipe := ""
 

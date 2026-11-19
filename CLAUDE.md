@@ -30,7 +30,7 @@ Repo público: https://github.com/rickypcyt/Win2Hyprland. Hacer `git push` solo 
   **Workspaces de la barra NO usan el proveedor `glazewm` de Zebar** (se congelaba con cambios rápidos): `bar.html` abre su propio WebSocket a `ws://localhost:6123` (IPC de GlazeWM), `sub -e all` + `query monitors` en cada evento, sondeo cada 500 ms y reconexión. Mantenerlo así.
   Abrir cosas desde la barra = `zebar.shellExec`, y el programa/argumentos deben estar permitidos en `privileges.shellCommands` de `zpack.json`.
 - **AutoHotkey**: ejecutar de nuevo `ahk\hotkeys.ahk` (tiene `#SingleInstance Force`, reemplaza la instancia).
-- **WezTerm**: recarga solo al guardar. Nightly (`wez.wezterm.nightly`): la estable de 2024 traía un conpty viejo que rompía el texto al redimensionar. Shell por defecto: WSL `archlinux` (zsh + Oh My Zsh) si existe, si no `pwsh`. Lo que deba correr en Windows se lanza con `wezterm-gui start --domain local -- ...` (Win+C nvim, `:GCC`).
+- **WezTerm**: recarga solo al guardar. Nightly (`wez.wezterm.nightly`): la estable de 2024 traía un conpty viejo que rompía el texto al redimensionar. Shell por defecto: `pwsh` (el usuario prefirió PowerShell 7 a WSL); Arch en el menú Ctrl+Shift+L. Ya no hay keepalive de WSL en `hotkeys.ahk`. Terminal principal: Alacritty (`pwsh`, `working_directory = C:\Users\ricar`, fuente `JetBrainsMono NF`: en Windows **no existe** la familia "JetBrainsMono Nerd Font" y Alacritty, a diferencia de WezTerm, no la resuelve).
 
 ## Convenciones de atajos (mantenerlas)
 
