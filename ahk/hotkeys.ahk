@@ -22,6 +22,17 @@ WS_PIPE := "\\.\pipe\win2hyprland-ws"
 ; Arrancar el puente (si ya hay uno corriendo, el nuevo sale solo).
 Run 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' A_ScriptDir '\glaze-bridge.ps1"', , "Hide"
 
+; ---------- Ventanas perdidas ----------
+; Si GlazeWM se cerró mal, las ventanas de otros workspaces se quedan ocultas
+; (abiertas pero invisibles). scripts\uncloak.ps1 las vuelve a mostrar y GlazeWM
+; las recoge. Se ejecuta al arrancar (este script lo lanza GlazeWM) y con
+; Ctrl+Alt+Shift+U. Windows PowerShell 5.1 a propósito: pwsh 7 no puede.
+RecoverWindows() {
+    Run 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' A_ScriptDir '\..\scripts\uncloak.ps1"', , "Hide"
+}
+SetTimer RecoverWindows, -3000      ; 3 s tras arrancar, cuando GlazeWM ya gestiona sus ventanas
+^!+u::RecoverWindows()
+
 
 global WsPipe := ""
 

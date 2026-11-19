@@ -110,6 +110,9 @@ The keyboard's media and brightness keys work as usual.
 | `Ctrl+Alt+Shift+R` | Reload the config |
 | `Ctrl+Alt+Shift+E` | Quit GlazeWM |
 | `Ctrl+Alt+Shift+Space` | Pause / resume tiling |
+| `Ctrl+Alt+Shift+U` | Recover "lost" windows (see below) |
+
+**Lost windows:** GlazeWM hides (cloaks) the windows of workspaces you're not looking at. If it's killed instead of exited cleanly, those windows stay open but invisible. `scripts/uncloak.ps1` shows them again and GlazeWM picks them back up. It runs automatically every time GlazeWM starts, and on demand with `Ctrl+Alt+Shift+U`. To quit GlazeWM, use `Ctrl+Alt+Shift+E`; that exits cleanly and restores every window.
 
 ### Terminal (Alacritty)
 
