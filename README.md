@@ -116,7 +116,7 @@ The keyboard's media and brightness keys work as usual.
 
 ### Terminal (Alacritty)
 
-`Win+Enter` opens **Alacritty**: the window shows up in about 30-130 ms, versus ~2 s for WezTerm, which is the closest thing to kitty's instant startup. It has the same look as my kitty/WezTerm: JetBrainsMono Nerd Font 16, solid black background, my 16-color palette, block cursor, padding 5, no title bar. It starts **PowerShell 7 in my Windows user folder** (zsh in WSL Arch is still set up; `wsl` opens it). Alacritty has no tabs or splits; GlazeWM tiles the windows instead. `Ctrl+Shift+N` opens a new window.
+`Win+Enter` opens **Alacritty**: the window shows up in about 30-130 ms, versus ~2 s for WezTerm, which is the closest thing to kitty's instant startup. It has the same look as my kitty/WezTerm: JetBrainsMono Nerd Font 16, solid black background, my 16-color palette, block cursor, padding 5, no title bar. It starts **zsh in WSL Arch in my Windows user folder** (the prompt shows it as a Windows path). It's ~0.5 s faster to open than PowerShell 7, and AutoHotkey keeps Arch running so there's no cold start. Alacritty has no tabs or splits; GlazeWM tiles the windows instead. `Ctrl+Shift+N` opens a new window.
 
 ### Terminal (WezTerm, my kitty.conf translated)
 
