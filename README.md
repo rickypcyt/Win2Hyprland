@@ -118,7 +118,7 @@ Same style as my kitty:
 - Block cursor and padding of 5.
 - Tabs on top in powerline style (only shown with two or more).
 
-**Linux commands:** WezTerm opens **zsh + Oh My Zsh inside WSL2 (Arch Linux)** by default, so it feels like the terminal I had on Linux. If the `archlinux` distro isn't installed, it falls back to PowerShell 7. Windows-only things (Neovim with `Win+C`, `:GCC`) are launched in the local Windows domain.
+**Linux commands:** WezTerm opens **zsh inside WSL2 (Arch Linux)** by default, so it feels like the terminal I had on Linux. The zsh config is lean, without Oh My Zsh, and starts in ~25 ms; AutoHotkey keeps Arch running in the background so there's no multi-second cold start. Windows-only things (Neovim with `Win+C`, `:GCC`) are launched in the local Windows domain.
 
 The prompt looks like PowerShell's: `C:\Users\ricar>` when you're in a Windows folder (`/mnt/c/...`), and the plain Linux path in Linux folders. `~/.zshrc` is a symlink to `zsh/zshrc` in this repo.
 
