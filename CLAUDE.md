@@ -50,3 +50,4 @@ Repo público: https://github.com/rickypcyt/Win2Hyprland. Hacer `git push` solo 
 - `bind_to_monitor` usa el índice de `glazewm query monitors`, que cambia si se desconecta el HDMI.
 - El brillo por WMI solo funciona en la pantalla del portátil.
 - La regla `ignore` para `window_process: zebar` es obligatoria; sin ella la barra aparece como ventana en el mosaico.
+- **WSL Arch** (`archlinux`, distro por defecto de WSL): usuario `ricky` (zsh, grupo `wheel` con sudo vía `/etc/sudoers.d/wheel`), usuario por defecto en `/etc/wsl.conf`, Oh My Zsh clonado en `~/.oh-my-zsh` con la plantilla de `.zshrc`. Para tareas de root sin contraseña: `wsl -d archlinux -u root -- ...`. Lanzar `wsl` desde PowerShell, no desde Git Bash (Git Bash reescribe las rutas `/mnt/c/...`).
