@@ -152,7 +152,8 @@ keybindings:
   # $terminal = kitty  → Alacritty (abre zsh en Arch, en C:/Users/ricar; ver alacritty/alacritty.toml)
   # Ruta 8.3 de C:/Program Files/Alacritty/alacritty.exe: shell-exec falla con espacios.
   - commands: ['shell-exec C:/PROGRA~1/ALACRI~1/ALACRI~1.EXE']
-    bindings: ['lwin+enter']
+    # Alt+Enter también (ojo: sustituye el Alt+Enter de las apps, p. ej. pantalla completa en juegos)
+    bindings: ['lwin+enter', 'alt+enter']
 
   # $menu = rofi -show drun  → Flow Launcher
   # (lanzar Flow.Launcher.exe con Flow ya abierto muestra su buscador)

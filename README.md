@@ -47,7 +47,7 @@ The logic is the same as in Hyprland:
 
 | Shortcut | Opens | On Hyprland it was |
 |---|---|---|
-| `Win+Enter` | WezTerm | kitty |
+| `Win+Enter` / `Alt+Enter` | Alacritty | kitty |
 | `Win+Space` | Flow Launcher (also `Alt+Space`) | rofi -show drun |
 | `Win+E` | File Explorer | thunar |
 | `Win+F` | Brave | brave |
