@@ -18,6 +18,7 @@ It's fast and works well day to day. I can indulge my habit of hammering `Alt+12
 | Waybar | [Zebar](https://github.com/glzr-io/zebar) with a custom pack | `glzr/zebar/waybar/` |
 | `playerctl`, `swayosd`, `grim`/`slurp`… | [AutoHotkey v2](https://www.autohotkey.com/) | `ahk/hotkeys.ahk` |
 | kitty | [WezTerm](https://wezfurlong.org/wezterm/) | `wezterm/wezterm.lua` |
+| Neovim | Neovim (same config, plugins pinned by `lazy-lock.json`) | `nvim/` |
 | rofi | [Flow Launcher](https://www.flowlauncher.com/) | — (its own config) |
 
 ## What it looks like
@@ -127,6 +128,24 @@ Same style as my kitty:
 | `Ctrl+Shift+T` | New tab (WezTerm shortcut that does work) |
 | `Ctrl+PageUp` / `Ctrl+PageDown` | Previous / next tab |
 
+### Neovim (my Linux config)
+
+Same config as on Linux, with the plugins pinned to the same versions through `lazy-lock.json`. It includes Cyberdream, Telescope, nvim-tree, Treesitter, lualine, bufferline, harpoon, hop, LSP and formatting on save. The only changes for Windows:
+
+- lazy.nvim installs itself on first launch.
+- `:Kitty` / `:Term` open WezTerm in the current file's folder.
+- `:GCC` compiles the current `.c` with MSYS2 gcc and runs it in a WezTerm window.
+- `telescope-project` looks in `C:/coding` instead of `~/coding`.
+- `hop.nvim` points to the maintained fork `smoka7/hop.nvim`, because the original repo was deleted.
+
+The main shortcuts (leader = `Space`) are the same as on Linux:
+
+- `Ctrl+F`: find files.
+- `Space ff` / `fg` / `fb` / `fe` / `fp`: Telescope files, grep, buffers, browser here and browser in the parent folder.
+- `Space e`: nvim-tree.
+- `Ctrl+S`: save and format.
+- `gd` / `K` / `gi`: LSP go to definition, hover and implementation.
+
 ---
 
 ## The bar (Zebar, Waybar style)
@@ -179,7 +198,20 @@ Clone the repo into `C:\Users\<your user>\Win2Hyprland` and link the config fold
 ```powershell
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.glzr" -Target "$env:USERPROFILE\Win2Hyprland\glzr"
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.config\wezterm" -Target "$env:USERPROFILE\Win2Hyprland\wezterm"
+New-Item -ItemType Junction -Path "$env:LOCALAPPDATA\nvim" -Target "$env:USERPROFILE\Win2Hyprland\nvim"
 ```
+
+For Neovim, also install the tools its plugins use. Then open `nvim` once, or run `nvim --headless "+Lazy! restore" +qa`, so lazy.nvim downloads the plugins:
+
+```powershell
+winget install BurntSushi.ripgrep.MSVC
+winget install sharkdp.fd
+winget install JohnnyMorganz.StyLua
+winget install LuaLS.lua-language-server
+npm install -g pyright vscode-langservers-extracted prettier
+```
+
+clangd and gcc come from [MSYS2](https://www.msys2.org/) (UCRT64): `pacman -S mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-clang-tools-extra`.
 
 Then open GlazeWM. It launches Zebar and the AutoHotkey shortcuts.
 
@@ -196,6 +228,7 @@ Win2Hyprland/
 │       └── waybar/           ← the bar: bar.html, styles.css, zpack.json
 ├── ahk/hotkeys.ahk           ← Alt+number, media, brightness, screenshots
 ├── wezterm/wezterm.lua       ← terminal
+├── nvim/                     ← Neovim (init.lua, lua/, lazy-lock.json)
 ├── hyprland-reference.conf   ← my original Hyprland config
 └── CLAUDE.md                 ← notes for editing the config with Claude Code
 ```

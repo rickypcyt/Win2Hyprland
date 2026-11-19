@@ -12,6 +12,7 @@ Repo público: https://github.com/rickypcyt/Win2Hyprland. Hacer `git push` solo 
 | Zebar | barra superior (Waybar) | `glzr/zebar/waybar/` (pack propio: `bar.html` lógica, `styles.css` colores Catppuccin, `zpack.json` tamaño/permisos); `glzr/zebar/settings.json` elige el pack | mismo junction |
 | AutoHotkey v2 | atajos que GlazeWM no puede: multimedia, brillo, capturas | `ahk/hotkeys.ahk` | lo lanza GlazeWM en `startup_commands` |
 | WezTerm | terminal (kitty) | `wezterm/wezterm.lua` | `~\.config\wezterm` es un **junction** a `Win2Hyprland\wezterm` |
+| Neovim 0.12 | editor (misma config que en Linux) | `nvim/` (lazy.nvim; `lazy-lock.json` fija versiones) | `%LOCALAPPDATA%\nvim` es un **junction** a `Win2Hyprland\nvim`; plugins en `%LOCALAPPDATA%\nvim-data\lazy` |
 | Flow Launcher | lanzador (rofi) | *no está en el repo* | `%LOCALAPPDATA%\FlowLauncher\Settings\Settings.json` (Flow lo sobrescribe al salir: cerrar Flow antes de editarlo) |
 
 `hyprland-reference.conf` es la config original de Hyprland, solo como referencia de qué atajo hacía qué.
@@ -38,6 +39,9 @@ Repo público: https://github.com/rickypcyt/Win2Hyprland. Hacer `git push` solo 
 - **Excepción: `Alt+1..0` (cambiar de workspace) está en AHK, no en GlazeWM.** El usuario los pulsa muy rápido en ráfagas (1234 4321…); en GlazeWM eso perdía teclas y dejaba el foco en ventanas ocultas. `WsGo`/`WsFlush` en `hotkeys.ahk` coalescen las pulsaciones y llaman a `glazewm command focus --workspace N` solo con la última. No volver a ponerlos en `config.yaml`. (`Alt+Shift+N` sí sigue en GlazeWM.)
 
 ## Trampas conocidas
+
+- **⚠ Lo que Claude escribe en `%LOCALAPPDATA%` / `%APPDATA%` NO llega al sitio real.** La app de Claude es un paquete MSIX: Windows redirige esas escrituras a `%LOCALAPPDATA%\Packages\AnthropicPBC.Claude_*\LocalCache\...`, que solo ve la propia app. Crear junctions, instalar plugins de nvim, etc. bajo AppData hay que hacerlo **fuera del paquete**: escribir un `.cmd` en `.tmp/` (gitignored) y lanzarlo con una tarea puntual (`schtasks /Create /TN W2H_x /TR <cmd> /SC ONCE /ST 23:59 /F`, `schtasks /Run`, luego `/Delete`), escribiendo el log en `.tmp/`. Si se ensucia la carpeta privada, borrar allí la copia. Las rutas fuera de AppData (`~\.glzr`, `~\.config`, este repo, `C:\msys64`) no tienen este problema.
+- **Neovim**: `localhost` tarda ~2 s (prueba IPv6) en clientes .NET; usar `127.0.0.1` para el WebSocket de GlazeWM. Los LSP de npm (`pyright`, `vscode-*-language-server`) funcionan vía sus `.cmd`. `typescript-tools` usa el TypeScript del proyecto (el global es TS 7, sin `tsserver`). clangd viene de MSYS2 (`C:\msys64\ucrt64\bin`).
 
 - `shell-exec` de GlazeWM: usar barras `/` en rutas y evitar rutas con espacios y comillas (da "command doesn't have an ending `\"`"). Si la ruta tiene espacios, buscar una alternativa (App Paths, alias en PATH, URI `ms-settings:` …).
 - Atajos `lwin+…` de GlazeWM sustituyen a los de Windows (Win+E, Win+V, Win+S…).
