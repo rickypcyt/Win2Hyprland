@@ -34,10 +34,11 @@ config.launch_menu = {
 -- ---------- Fuentes ----------
 -- font_family JetBrains Mono Nerd Font / font_size 16
 -- (en Windows la Nerd Font se registra como "JetBrainsMono NF")
+-- SemiBold: la Regular se veía muy fina (igual que en Alacritty)
 config.font = wezterm.font_with_fallback {
-  'JetBrainsMono Nerd Font',
-  'JetBrainsMono NF',
-  'JetBrains Mono',
+  { family = 'JetBrainsMono Nerd Font', weight = 'DemiBold' },
+  { family = 'JetBrainsMono NF', weight = 'DemiBold' },
+  { family = 'JetBrains Mono', weight = 'DemiBold' },
 }
 config.font_size = 16.0
 -- disable_ligatures never → ligaduras activadas (por defecto en WezTerm)
@@ -47,7 +48,7 @@ config.underline_thickness = '150%'
 
 -- ---------- Colores ----------
 config.colors = {
-  foreground = '#e0e0e0',
+  foreground = '#ffffff',   -- texto blanco (antes #e0e0e0)
   background = '#000000',
 
   cursor_bg = '#ffffff',

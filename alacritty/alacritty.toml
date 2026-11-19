@@ -25,25 +25,27 @@ args = ["-NoLogo"]
 [font]
 size = 16.0
 
+# Más gruesa que la Regular (se veía muy fina): texto normal en SemiBold,
+# negrita en ExtraBold para que siga destacando.
 [font.normal]
 family = "JetBrainsMono NF"
-style = "Regular"
+style = "SemiBold"
 
 [font.bold]
 family = "JetBrainsMono NF"
-style = "Bold"
+style = "ExtraBold"
 
 [font.italic]
 family = "JetBrainsMono NF"
-style = "Italic"
+style = "SemiBold Italic"
 
 [font.bold_italic]
 family = "JetBrainsMono NF"
-style = "Bold Italic"
+style = "ExtraBold Italic"
 
 # ---------- Colores ----------
 [colors.primary]
-foreground = "#e0e0e0"
+foreground = "#ffffff"   # texto blanco (antes #e0e0e0)
 background = "#000000"
 
 [colors.cursor]
