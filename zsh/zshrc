@@ -1,22 +1,53 @@
 # ============================================================
-# zsh en WSL Arch
+# zsh en WSL Arch — config ligera (arranca en ~15 ms)
 # ============================================================
 # ~/.zshrc es un symlink a este archivo:
 #   /mnt/c/Users/ricar/Win2Hyprland/zsh/zshrc
-# Prompt: estilo PowerShell, "C:\Users\ricar>" (definido abajo).
-# Powerlevel10k sigue instalado por si se quiere volver: poner
-# ZSH_THEME="powerlevel10k/powerlevel10k" y quitar la sección del prompt.
+# Sin Oh My Zsh: costaba 300-470 ms en cada terminal nueva. Aquí está solo
+# lo que se usaba de él (autocompletado, historial, atajos). Oh My Zsh sigue
+# en ~/.oh-my-zsh por si se quiere volver.
 # ============================================================
 
-# ---------- Oh My Zsh ----------
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME=""          # sin tema: el prompt se define abajo
-plugins=(git)
-source $ZSH/oh-my-zsh.sh
+# ---------- Historial ----------
+HISTFILE=~/.zsh_history
+HISTSIZE=50000
+SAVEHIST=50000
+setopt SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE HIST_REDUCE_BLANKS
+
+# ---------- Comportamiento ----------
+setopt AUTO_CD              # escribir una carpeta = cd a ella
+setopt INTERACTIVE_COMMENTS
+setopt NO_BEEP
+
+# ---------- Autocompletado ----------
+# compinit -C usa la caché (~/.zcompdump); se regenera una vez al día.
+autoload -Uz compinit
+() { if (( $# )); then compinit; else compinit -C; fi } ~/.zcompdump(N.mh+24)
+zstyle ':completion:*' menu select                                  # menú navegable con flechas/Tab
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'  # sin distinguir mayúsculas
+zstyle ':completion:*' special-dirs true
+
+# ---------- Teclas ----------
+bindkey -e                                  # atajos estilo emacs/bash
+bindkey '^[[1;5C' forward-word              # Ctrl+→
+bindkey '^[[1;5D' backward-word             # Ctrl+←
+bindkey '^[[H'  beginning-of-line           # Inicio
+bindkey '^[[F'  end-of-line                 # Fin
+bindkey '^[[3~' delete-char                 # Supr
+bindkey '^H'    backward-kill-word          # Ctrl+Backspace
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey '^[[A' up-line-or-beginning-search  # ↑ busca en el historial lo ya escrito
+bindkey '^[[B' down-line-or-beginning-search
 
 # ---------- Preferencias ----------
 export EDITOR=nvim
 export VISUAL=nvim
+alias ls='ls --color=auto'
+alias ll='ls -lh'
+alias la='ls -lhA'
+alias grep='grep --color=auto'
 
 # ---------- Colores de ls ----------
 # Los archivos de Windows (/mnt/c) se ven como "escribibles por todos" y
@@ -42,3 +73,6 @@ w2h_prompt_path() {
 setopt PROMPT_SUBST
 PROMPT='$(w2h_prompt_path)> '
 RPROMPT=''
+
+# Título de la pestaña de WezTerm = carpeta actual (como hacía Oh My Zsh)
+precmd() { print -Pn "\e]0;%~\a" }

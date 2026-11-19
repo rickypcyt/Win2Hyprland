@@ -35,10 +35,17 @@ public static class GlazeBridge {
         try { File.AppendAllText(logPath, DateTime.Now.ToString("HH:mm:ss.fff") + " " + s + Environment.NewLine); } catch {}
     }
 
-    public static void Run() {
+    // Campo estático: si fuera una variable local, el recolector de basura podría
+    // liberarla y soltar el mutex, permitiendo un segundo puente.
+    static Mutex instanceMutex;
+
+    public static bool AcquireSingleInstance() {
         bool created;
-        var mutex = new Mutex(true, "Win2Hyprland.GlazeBridge", out created);
-        if (!created) return; // ya hay otro puente corriendo
+        instanceMutex = new Mutex(true, "Win2Hyprland.GlazeBridge", out created);
+        return created;
+    }
+
+    public static void Run() {
 
         var sender = new Thread(SendLoop) { IsBackground = true };
         sender.Start();
@@ -237,5 +244,6 @@ public static class GlazeBridge {
 }
 '@ -ReferencedAssemblies System.Web.Extensions
 
+if (-not [GlazeBridge]::AcquireSingleInstance()) { exit }  # ya hay otro puente corriendo
 [GlazeBridge]::StartAutoTiling()
 [GlazeBridge]::Run()
