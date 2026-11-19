@@ -144,6 +144,8 @@ Same config as on Linux, with the plugins pinned to the same versions through `l
 - `telescope-project` looks in `C:/coding` instead of `~/coding`.
 - `hop.nvim` points to the maintained fork `smoka7/hop.nvim`, because the original repo was deleted.
 
+The **same config is used inside WSL Arch**: `~/.config/nvim` is a symlink to this folder, so editing it once changes both. Arch has its own Neovim, plugins and language servers (installed with `pacman`), and the config detects the OS: on Arch, `:Kitty`/`:GCC` open WezTerm in the Arch domain and Telescope projects look in `/mnt/c/coding`. The clipboard is shared with Windows through `win32yank`.
+
 The main shortcuts (leader = `Space`) are the same as on Linux:
 
 - `Ctrl+F`: find files.

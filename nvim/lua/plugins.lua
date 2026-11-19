@@ -123,7 +123,8 @@ lazy.setup({
 						},
 					},
 					project = {
-						base_dirs = { "C:/coding" }, -- en Linux era ~/coding
+						-- Windows: C:/coding. Arch (WSL): la misma carpeta vista desde Linux
+						base_dirs = vim.fn.has("win32") == 1 and { "C:/coding" } or { "/mnt/c/coding" },
 						hidden_files = true,
 						theme = "dropdown",
 					},
