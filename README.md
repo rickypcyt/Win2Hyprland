@@ -24,6 +24,7 @@ It's fast and works well day to day. I can indulge my habit of hammering `Alt+12
 ## What it looks like
 
 - **Automatic tiling** with `gaps_in = 5` and `gaps_out = 10`, same as in Hyprland.
+- **Dwindle-style layout**, like Hyprland's `layout = dwindle`. Each new window splits the focused one along its long side. With three windows, the first one takes the whole left half and the other two stack on the right. GlazeWM doesn't do this natively; a small helper (`ahk/glaze-bridge.ps1`) sets the split direction every time a window gets focus.
 - **Rounded corners**, no borders or title bars.
 - **No transparency**: all windows are opaque (in Hyprland I had `inactive_opacity = 0.9`; I dropped it here).
 - **Focus follows the mouse**, like `follow_mouse = 1`.
@@ -69,7 +70,7 @@ The logic is the same as in Hyprland:
 | `Win+↑` | Fullscreen |
 | `Win+←` / `Win+→` | Move the window left / right |
 | `Win+Shift+←↑→↓` | Move the window in that direction |
-| `Win+M` | Change the tiling direction (horizontal / vertical) |
+| `Win+M` | Change the tiling direction (horizontal / vertical) for the next window (dwindle takes over again on the next focus change) |
 
 ### Workspaces
 
@@ -117,8 +118,13 @@ Same style as my kitty:
 - Block cursor and padding of 5.
 - Tabs on top in powerline style (only shown with two or more).
 
+**Linux commands:** WezTerm opens **zsh + Oh My Zsh inside WSL2 (Ubuntu)** by default, so it feels like the terminal I had on Linux. If the `Ubuntu` distro isn't installed, it falls back to PowerShell 7. Windows-only things (Neovim with `Win+C`, `:GCC`) are launched in the local Windows domain.
+
+I use the WezTerm **nightly** build (`winget install wez.wezterm.nightly`). The 2024 stable build ships an old ConPTY that garbles the text when the window is resized, which happens all the time with a tiling WM.
+
 | Shortcut | Action |
 |---|---|
+| `Ctrl+Shift+L` | Pick a shell for a new tab: Ubuntu (zsh), PowerShell 7, PowerShell 5.1, cmd |
 | `Ctrl+Alt+T` / `Ctrl+Alt+O` | Split: new terminal to the side |
 | `Ctrl+Alt+Y` | Split: new terminal below |
 | `Ctrl+Shift+←↑→↓` | Move between splits |
@@ -174,10 +180,10 @@ On Hyprland I could hammer `Alt+1234 4321` and nothing happened, because the com
 
 I fixed it with two changes:
 
-1. **`Alt+number` is handled by AutoHotkey, not GlazeWM.** If GlazeWM is idle, the switch is sent instantly. If it's busy, only the last key pressed is kept and sent when it finishes. The intermediate ones are discarded, so nothing piles up and you always end up on the last workspace you pressed.
-2. **The bar talks directly to GlazeWM** over its WebSocket (`localhost:6123`), bypassing Zebar's module, which used to freeze. It re-queries the state on every event, checks every 500 ms in case one is missed, and reconnects on its own if GlazeWM restarts.
+1. **`Alt+number` is handled by AutoHotkey, not GlazeWM.** AutoHotkey writes the number to a named pipe. A helper process (`ahk/glaze-bridge.ps1`) keeps a WebSocket open to GlazeWM and sends the switch right away, in about 46 ms instead of the ~270 ms it took to launch `glazewm.exe` for every key. If GlazeWM is busy, only the last key pressed is sent and the intermediate ones are discarded, so nothing piles up. When you stop pressing, it re-sends the last workspace once or twice, because GlazeWM sometimes jumps back to an earlier workspace after a burst.
+2. **The bar talks directly to GlazeWM** over its WebSocket (`127.0.0.1:6123`), bypassing Zebar's module, which used to freeze. It re-queries the state on every event, checks every 500 ms in case one is missed, and reconnects on its own if GlazeWM restarts.
 
-Tested with simulated bursts of up to 49 keystrokes in under 300 ms. It always lands on the correct workspace, with focus in the right place and the bar in sync.
+The bar stays in sync with GlazeWM in simulated bursts of up to 49 keystrokes in under 300 ms. The re-send step that guarantees landing on the last pressed workspace is newer and still being tested.
 
 ---
 
@@ -187,7 +193,7 @@ Tested with simulated bursts of up to 49 keystrokes in under 300 ms. It always l
 winget install glzr-io.glazewm
 winget install glzr-io.zebar
 winget install AutoHotkey.AutoHotkey
-winget install wez.wezterm
+winget install wez.wezterm.nightly
 winget install Flow-Launcher.Flow-Launcher
 winget install Neovim.Neovim
 winget install DEVCOM.JetBrainsMonoNerdFont
@@ -227,6 +233,7 @@ Win2Hyprland/
 │       ├── settings.json     ← which bar starts
 │       └── waybar/           ← the bar: bar.html, styles.css, zpack.json
 ├── ahk/hotkeys.ahk           ← Alt+number, media, brightness, screenshots
+├── ahk/glaze-bridge.ps1      ← fast workspace switching + dwindle autotiling
 ├── wezterm/wezterm.lua       ← terminal
 ├── nvim/                     ← Neovim (init.lua, lua/, lazy-lock.json)
 ├── hyprland-reference.conf   ← my original Hyprland config
@@ -236,6 +243,5 @@ Win2Hyprland/
 ## What can't be matched
 
 - **Blur:** Windows doesn't allow it.
-- **Dwindle:** GlazeWM doesn't split in a spiral automatically; it places each new window in the current tiling direction (`Win+M` changes it).
 - **`Win+L`:** reserved by Windows.
 - **No equivalent yet:** hiding the bar (`Win+P`), power menu (`Win+Escape`), switching audio output (`Ctrl+Alt+V`) and power profile (`Ctrl+Alt+B`).

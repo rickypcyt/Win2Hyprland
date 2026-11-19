@@ -149,7 +149,93 @@ public static class GlazeBridge {
             lock (gate) { if (target == sent) { target = null; sent = null; } }
         }
     }
-}
-'@
 
+    // ========================================================
+    // Autotiling estilo dwindle de Hyprland
+    // ========================================================
+    // Al enfocar una ventana en mosaico: si es más ancha que alta, la siguiente
+    // ventana se abrirá a su lado (horizontal); si es más alta, debajo (vertical).
+    // Con 3 ventanas: una a la izquierda completa y dos apiladas a la derecha.
+    // Va por su propia conexión WebSocket; espera 50 ms de calma y no actúa
+    // mientras haya un cambio de workspace en curso (para no frenar Alt+número).
+    static ClientWebSocket ev = null;
+    static readonly object evSend = new object();
+    static readonly AutoResetEvent tileWake = new AutoResetEvent(false);
+    static string pendWin = null, pendDir = null, appliedWin = null, appliedDir = null;
+    static DateTime pendAt = DateTime.MinValue;
+
+    public static void StartAutoTiling() {
+        new Thread(AutoTileReader) { IsBackground = true }.Start();
+        new Thread(AutoTileWorker) { IsBackground = true }.Start();
+    }
+
+    static void EvSend(string text) {
+        var m = Encoding.UTF8.GetBytes(text);
+        lock (evSend) ev.SendAsync(new ArraySegment<byte>(m), WebSocketMessageType.Text, true, CancellationToken.None).Wait();
+    }
+
+    static void AutoTileReader() {
+        var rbuf = new byte[1 << 16];
+        var json = new System.Web.Script.Serialization.JavaScriptSerializer { MaxJsonLength = int.MaxValue, RecursionLimit = 2000 };
+        while (true) {
+            try {
+                ev = new ClientWebSocket();
+                ev.ConnectAsync(new Uri("ws://127.0.0.1:6123"), CancellationToken.None).Wait(2000);
+                if (ev.State != WebSocketState.Open) throw new Exception("sin conexion");
+                EvSend("sub -e focus_changed");
+                while (ev.State == WebSocketState.Open) {
+                    var sb = new StringBuilder();
+                    WebSocketReceiveResult res;
+                    do {
+                        res = ev.ReceiveAsync(new ArraySegment<byte>(rbuf), CancellationToken.None).Result;
+                        sb.Append(Encoding.UTF8.GetString(rbuf, 0, res.Count));
+                    } while (!res.EndOfMessage);
+                    if (res.MessageType == WebSocketMessageType.Close) break;
+                    var s = sb.ToString();
+                    if (!s.Contains("\"focus_changed\"")) continue;
+                    var msg = json.Deserialize<System.Collections.Generic.Dictionary<string, object>>(s);
+                    var data = msg["data"] as System.Collections.Generic.Dictionary<string, object>;
+                    if (data == null || !data.ContainsKey("focusedContainer")) continue;
+                    var fc = data["focusedContainer"] as System.Collections.Generic.Dictionary<string, object>;
+                    if (fc == null || (fc["type"] as string) != "window") continue;
+                    var st = fc["state"] as System.Collections.Generic.Dictionary<string, object>;
+                    if (st == null || (st["type"] as string) != "tiling") continue;
+                    double w = Convert.ToDouble(fc["width"]), h = Convert.ToDouble(fc["height"]);
+                    lock (gate) {
+                        pendWin = fc["id"] as string;
+                        pendDir = w >= h ? "horizontal" : "vertical";
+                        pendAt = DateTime.UtcNow;
+                    }
+                    tileWake.Set();
+                }
+            } catch (Exception ex) { Log("autotiling: " + ex.Message); }
+            try { if (ev != null) ev.Abort(); } catch {}
+            Thread.Sleep(1000); // GlazeWM reiniciándose: reconectar
+        }
+    }
+
+    static void AutoTileWorker() {
+        while (true) {
+            tileWake.WaitOne();
+            while (true) {
+                string win, dir; DateTime at; bool switching;
+                lock (gate) { win = pendWin; dir = pendDir; at = pendAt; switching = target != null; }
+                if (win == null) break;
+                var wait = 50 - (DateTime.UtcNow - at).TotalMilliseconds;
+                if (wait > 0 || switching) { Thread.Sleep(wait > 0 ? (int)wait + 1 : 60); continue; }
+                lock (gate) { if (pendAt != at) continue; pendWin = null; }
+                if (win == appliedWin && dir == appliedDir) break;
+                try {
+                    EvSend("command set-tiling-direction " + dir);
+                    appliedWin = win; appliedDir = dir;
+                    if (Verbose) Log("autotiling " + dir);
+                } catch (Exception ex) { Log("autotiling envio: " + ex.Message); }
+                break;
+            }
+        }
+    }
+}
+'@ -ReferencedAssemblies System.Web.Extensions
+
+[GlazeBridge]::StartAutoTiling()
 [GlazeBridge]::Run()

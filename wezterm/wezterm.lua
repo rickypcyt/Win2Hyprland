@@ -6,8 +6,28 @@ local wezterm = require 'wezterm'
 local act = wezterm.action
 local config = wezterm.config_builder()
 
--- Shell por defecto: PowerShell
-config.default_prog = { 'powershell.exe', '-NoLogo' }
+-- ---------- Shells ----------
+-- Fuera de WSL: PowerShell 7 (pwsh). PowerShell 5.1 se rompía más al redimensionar.
+config.default_prog = { 'pwsh.exe', '-NoLogo' }
+
+-- Linux: si existe la distro de WSL "Ubuntu", WezTerm abre directamente su shell
+-- (zsh + Oh My Zsh) empezando en el home de Linux. Si no existe, se queda en pwsh.
+local WSL_DISTRO = 'WSL:Ubuntu'
+local wsl_domains = wezterm.default_wsl_domains()
+for _, dom in ipairs(wsl_domains) do
+  dom.default_cwd = '~'
+  if dom.name == WSL_DISTRO then
+    config.default_domain = WSL_DISTRO
+  end
+end
+config.wsl_domains = wsl_domains
+
+-- Menú para elegir shell: Ctrl+Shift+L
+config.launch_menu = {
+  { label = 'PowerShell 7', args = { 'pwsh.exe', '-NoLogo' }, domain = { DomainName = 'local' } },
+  { label = 'Windows PowerShell 5.1', args = { 'powershell.exe', '-NoLogo' }, domain = { DomainName = 'local' } },
+  { label = 'cmd', args = { 'cmd.exe' }, domain = { DomainName = 'local' } },
+}
 
 -- ---------- Fuentes ----------
 -- font_family JetBrains Mono Nerd Font / font_size 16
@@ -137,6 +157,9 @@ config.keys = {
 
   -- Nueva pestaña (ojo: AutoHotkey usa Ctrl+Alt+N para "siguiente canción", igual que Hyprland)
   { key = 'n', mods = 'CTRL|ALT', action = act.SpawnTab 'CurrentPaneDomain' },
+
+  -- Elegir shell / distro (Ubuntu, PowerShell, cmd) en una pestaña nueva
+  { key = 'l', mods = 'CTRL|SHIFT', action = act.ShowLauncherArgs { flags = 'FUZZY|LAUNCH_MENU_ITEMS|DOMAINS' } },
 
   -- Navegar entre pestañas
   { key = 'PageUp', mods = 'CTRL', action = act.ActivateTabRelative(-1) },

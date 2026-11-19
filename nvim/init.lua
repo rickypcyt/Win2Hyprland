@@ -17,7 +17,7 @@ vim.api.nvim_create_user_command("GCC", function()
                 vim.notify(out, vim.log.levels.ERROR, { title = "gcc" })
                 return
         end
-        vim.fn.jobstart({ "wezterm-gui", "start", "--cwd", dir, "--", "cmd", "/k", name .. ".exe" }, { detach = true })
+        vim.fn.jobstart({ "wezterm-gui", "start", "--domain", "local", "--cwd", dir, "--", "cmd", "/k", name .. ".exe" }, { detach = true })
 end, { desc = "Compilar y ejecutar el archivo C en WezTerm" })
 
 -- Restaurar cursor al abrir archivos

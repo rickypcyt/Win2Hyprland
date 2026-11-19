@@ -29,14 +29,16 @@ Repo público: https://github.com/rickypcyt/Win2Hyprland. Hacer `git push` solo 
   **Workspaces de la barra NO usan el proveedor `glazewm` de Zebar** (se congelaba con cambios rápidos): `bar.html` abre su propio WebSocket a `ws://localhost:6123` (IPC de GlazeWM), `sub -e all` + `query monitors` en cada evento, sondeo cada 500 ms y reconexión. Mantenerlo así.
   Abrir cosas desde la barra = `zebar.shellExec`, y el programa/argumentos deben estar permitidos en `privileges.shellCommands` de `zpack.json`.
 - **AutoHotkey**: ejecutar de nuevo `ahk\hotkeys.ahk` (tiene `#SingleInstance Force`, reemplaza la instancia).
-- **WezTerm**: recarga solo al guardar.
+- **WezTerm**: recarga solo al guardar. Nightly (`wez.wezterm.nightly`): la estable de 2024 traía un conpty viejo que rompía el texto al redimensionar. Shell por defecto: WSL `Ubuntu` (zsh + Oh My Zsh) si existe, si no `pwsh`. Lo que deba correr en Windows se lanza con `wezterm-gui start --domain local -- ...` (Win+C nvim, `:GCC`).
 
 ## Convenciones de atajos (mantenerlas)
 
 - `Win` = apps y acciones de ventana · `Alt` = workspaces · `Ctrl+Alt` = multimedia/utilidades (AHK) · `Ctrl+Alt+Shift` = control de GlazeWM.
 - Un atajo vive en **un solo sitio**: GlazeWM si lanza algo o maneja ventanas, AHK si necesita enviar teclas/WMI. Antes de añadir uno, buscar que no esté ya en el otro archivo.
 - Windows no deja usar `Win+L` (bloqueo).
-- **Excepción: `Alt+1..0` (cambiar de workspace) está en AHK, no en GlazeWM.** El usuario los pulsa muy rápido en ráfagas (1234 4321…); en GlazeWM eso perdía teclas y dejaba el foco en ventanas ocultas. `WsGo`/`WsFlush` en `hotkeys.ahk` coalescen las pulsaciones y llaman a `glazewm command focus --workspace N` solo con la última. No volver a ponerlos en `config.yaml`. (`Alt+Shift+N` sí sigue en GlazeWM.)
+- **Excepción: `Alt+1..0` (cambiar de workspace) está en AHK, no en GlazeWM.** El usuario los pulsa muy rápido en ráfagas (1234 4321…); en GlazeWM eso perdía teclas y dejaba el foco en ventanas ocultas. No volver a ponerlos en `config.yaml`. (`Alt+Shift+N` sí sigue en GlazeWM.)
+  Camino: `hotkeys.ahk` (`WsGo`, `Critical`, conexión persistente) escribe el número en la named pipe `\\.\pipe\win2hyprland-ws` → `ahk/glaze-bridge.ps1` (C# vía Add-Type, lo arranca hotkeys.ahk, mutex de instancia única) lo manda por un WebSocket abierto a `127.0.0.1:6123`. ~46 ms frente a ~270 ms lanzando `glazewm.exe`. El puente coalesce (solo la última tecla) y al parar "asienta" re-mandando el último workspace a los 90 y 220 ms, porque GlazeWM a veces vuelve a un workspace anterior tras una ráfaga. Si el puente no responde, `WsGoSlow` usa `glazewm.exe`. Log: `%TEMP%\glaze-bridge.log` (`GLAZE_BRIDGE_VERBOSE=1` para traza).
+- **Autotiling (dwindle de Hyprland)** también vive en `glaze-bridge.ps1`: con `focus_changed` de una ventana en mosaico manda `set-tiling-direction horizontal` si es más ancha que alta, `vertical` si no (50 ms de calma, nunca durante un cambio de workspace). Por eso `Win+M` (toggle-tiling-direction) solo afecta hasta el siguiente cambio de foco.
 
 ## Trampas conocidas
 

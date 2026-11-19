@@ -158,7 +158,7 @@ keybindings:
     bindings: ['lwin+f']
 
   # $code = kitty nvim
-  - commands: ['shell-exec wezterm-gui start -- nvim']
+  - commands: ['shell-exec wezterm-gui start --domain local -- nvim']
     bindings: ['lwin+c']
 
   # kitty nmtui  → ajustes de red / Wi-Fi
