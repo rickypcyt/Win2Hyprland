@@ -44,7 +44,7 @@
         bat: ['\u{f008e}', '\u{f007a}', '\u{f007b}', '\u{f007c}', '\u{f007d}', '\u{f007e}',
               '\u{f007f}', '\u{f0080}', '\u{f0081}', '\u{f0082}', '\u{f0079}'],
       };
-      const PERSISTENT_WS = ['1', '2', '3', '4', '5'];
+      // Puntos dinámicos: solo workspaces con ventanas + el que se está viendo.
 
       // ---------- conexión directa con GlazeWM ----------
       // El proveedor 'glazewm' de Zebar se queda congelado si se cambia de
@@ -113,11 +113,11 @@
       }
 
       let wsKey = '';
-      // Pinta los puntos: names = workspaces que existen, activeName = el visible,
-      // go(name) = cómo cambiar a él (GlazeWM o Komorebi).
-      function drawWorkspaces(existingNames, activeName, go) {
+      // Pinta los puntos: busyNames = workspaces con ventanas, activeName = el visible
+      // (se muestra aunque esté vacío), go(name) = cómo cambiar a él (GlazeWM o Komorebi).
+      function drawWorkspaces(busyNames, activeName, go) {
         const el = $('workspaces');
-        const names = [...new Set([...PERSISTENT_WS, ...existingNames])]
+        const names = [...new Set([...busyNames, ...(activeName ? [activeName] : [])])]
           .sort((a, b) => Number(a) - Number(b));
         const key = names.join() + '|' + activeName;
         if (key === wsKey) return; // nada cambió: no tocar el DOM
@@ -138,14 +138,18 @@
         const all = monitors.flatMap(m => m.children.filter(c => c.type === 'workspace'));
         // activo = el workspace que se ve en ESTE monitor
         const activeName = mine?.children.find(w => w.isDisplayed)?.name;
-        drawWorkspaces(all.map(w => w.name), activeName, name => glaze.run(`focus --workspace ${name}`));
+        const hasWindows = c => c.type === 'window' || (c.children ?? []).some(hasWindows);
+        const busy = all.filter(hasWindows).map(w => w.name);
+        drawWorkspaces(busy, activeName, name => glaze.run(`focus --workspace ${name}`));
       }
 
       // Con Komorebi (GlazeWM apagado): mismos puntos, datos del proveedor de Zebar.
       function renderKomorebi(k) {
         if (!k || glaze.isOpen()) return;
-        const names = k.allWorkspaces.map(w => w.name).filter(Boolean);
-        drawWorkspaces(names, k.displayedWorkspace?.name, name =>
+        const busy = k.allWorkspaces
+          .filter(w => w.name && (w.tilingContainers.length || w.floatingWindows.length || w.monocleContainer || w.maximizedWindow))
+          .map(w => w.name);
+        drawWorkspaces(busy, k.displayedWorkspace?.name, name =>
           zebar.shellExec('C:\\Program Files\\komorebi\\bin\\komorebic-no-console.exe', ['focus-named-workspace', name]).catch(() => {}));
       }
       renderWorkspaces([]);
