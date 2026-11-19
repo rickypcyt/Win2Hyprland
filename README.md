@@ -67,8 +67,8 @@ The logic is the same as in Hyprland:
 |---|---|
 | `Alt+W` | Close the window |
 | `Win+I` | Toggle floating / tiling |
-| `Win+↑` | Fullscreen |
-| `Win+←` / `Win+→` | Move the window left / right |
+| `Win+Shift+F` | Fullscreen |
+| `Win+←↑→↓` | Move the window in that direction |
 | `Win+Shift+←↑→↓` | Move the window in that direction |
 | `Win+M` | Change the tiling direction (horizontal / vertical) for the next window (dwindle takes over again on the next focus change) |
 

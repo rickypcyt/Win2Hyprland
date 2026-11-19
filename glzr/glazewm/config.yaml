@@ -206,8 +206,15 @@ keybindings:
   - commands: ['toggle-floating --centered']
     bindings: ['lwin+i']
 
+  # Pantalla completa (antes Win+Up)
   - commands: ['toggle-fullscreen']
+    bindings: ['lwin+shift+f']
+
+  # Win + flechas: mover la ventana (izquierda/derecha más abajo)
+  - commands: ['move --direction up']
     bindings: ['lwin+up']
+  - commands: ['move --direction down']
+    bindings: ['lwin+down']
 
   # swapwindow l/r
   - commands: ['move --direction left']
