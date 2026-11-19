@@ -49,6 +49,18 @@ alias ll='ls -lh'
 alias la='ls -lhA'
 alias grep='grep --color=auto'
 
+# ---------- Comandos internos de cmd ----------
+# No son programas (.exe), así que el truco de abajo no los cubre. En zsh,
+# "type" buscaba un PROGRAMA con ese nombre ("certreq.csr not found").
+alias type='cat'      # mostrar un archivo (para ver qué es un comando: whence -v)
+alias cls='clear'
+alias copy='cp'
+alias move='mv'
+alias ren='mv'
+alias del='rm'
+alias md='mkdir'
+alias rd='rmdir'
+
 # ---------- Herramientas de Windows sin escribir .exe ----------
 # WSL puede ejecutar programas de Windows, pero solo con la extensión
 # (keytool.exe, no keytool). Si un comando no existe en Linux, se busca su
