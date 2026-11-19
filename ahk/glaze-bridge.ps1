@@ -140,6 +140,107 @@ public static class GlazeBridge {
         return (n["type"] as string) == "split" && k != null && k.Count == 1;
     }
 
+    static void CollectTiledWindows(System.Collections.Generic.Dictionary<string, object> n,
+                                    System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>> outList) {
+        if ((n["type"] as string) == "window") {
+            var st = n["state"] as System.Collections.Generic.Dictionary<string, object>;
+            if (st != null && (st["type"] as string) == "tiling") outList.Add(n);
+            return;
+        }
+        var k = Kids(n);
+        if (k != null) foreach (var c in k) { var d = c as System.Collections.Generic.Dictionary<string, object>; if (d != null) CollectTiledWindows(d, outList); }
+    }
+
+    static double D(System.Collections.Generic.Dictionary<string, object> n, string k) { return Convert.ToDouble(n[k]); }
+
+    // ¿Hay otra ventana en mosaico al otro lado de ese borde, solapando en el eje perpendicular?
+    static bool HasWindowInDirection(System.Collections.Generic.Dictionary<string, object> w,
+                                     System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>> all, string dir) {
+        double x = D(w, "x"), y = D(w, "y"), r = x + D(w, "width"), b = y + D(w, "height");
+        foreach (var o in all) {
+            if (ReferenceEquals(o, w)) continue;
+            double ox = D(o, "x"), oy = D(o, "y"), or_ = ox + D(o, "width"), ob = oy + D(o, "height");
+            bool overlapY = oy < b - 2 && ob > y + 2, overlapX = ox < r - 2 && or_ > x + 2;
+            if (dir == "left"  && or_ <= x + 2 && overlapY) return true;
+            if (dir == "right" && ox >= r - 2  && overlapY) return true;
+            if (dir == "up"    && ob <= y + 2  && overlapX) return true;
+            if (dir == "down"  && oy >= b - 2  && overlapX) return true;
+        }
+        return false;
+    }
+
+    static volatile bool swapping = false;   // pausa el autotiling durante un intercambio
+    static string Opposite(string d) { return d == "left" ? "right" : d == "right" ? "left" : d == "up" ? "down" : "up"; }
+
+    // Busca una ventana por id en el workspace con foco y devuelve su camino.
+    static System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>> PathOf(ClientWebSocket c, string id) {
+        var json = new System.Web.Script.Serialization.JavaScriptSerializer { MaxJsonLength = int.MaxValue, RecursionLimit = 2000 };
+        var resp = json.Deserialize<System.Collections.Generic.Dictionary<string, object>>(Request(c, "query workspaces"));
+        var wss = (resp["data"] as System.Collections.Generic.Dictionary<string, object>)["workspaces"] as System.Collections.ArrayList;
+        foreach (var w in wss) {
+            var p = new System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>>();
+            if (FindById(w as System.Collections.Generic.Dictionary<string, object>, id, p)) return p;
+        }
+        return null;
+    }
+    static bool FindById(System.Collections.Generic.Dictionary<string, object> n, string id,
+                         System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>> p) {
+        p.Add(n);
+        if ((n["id"] as string) == id) return true;
+        var k = Kids(n);
+        if (k != null) foreach (var c in k) if (FindById(c as System.Collections.Generic.Dictionary<string, object>, id, p)) return true;
+        p.RemoveAt(p.Count - 1); return false;
+    }
+
+    // A está sola en su columna; group es el grupo de al lado. Intercambia A con la
+    // ventana T del grupo más cercana a A en el eje perpendicular.
+    static void SwapAcrossGroups(ClientWebSocket c, System.Collections.Generic.Dictionary<string, object> a,
+                                 System.Collections.Generic.Dictionary<string, object> group, string dir) {
+        var inGroup = new System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>>();
+        CollectTiledWindows(group, inGroup);
+        if (inGroup.Count == 0) return;
+        bool horiz = dir == "left" || dir == "right";
+        double ac = horiz ? D(a, "y") + D(a, "height") / 2 : D(a, "x") + D(a, "width") / 2;
+        System.Collections.Generic.Dictionary<string, object> t = null; double best = double.MaxValue;
+        foreach (var w in inGroup) {
+            // más cercana: primero la más pegada al borde que compartimos, luego la más alineada
+            double edge = dir == "right" ? D(w, "x") : dir == "left" ? -(D(w, "x") + D(w, "width"))
+                        : dir == "down" ? D(w, "y") : -(D(w, "y") + D(w, "height"));
+            double wc = horiz ? D(w, "y") + D(w, "height") / 2 : D(w, "x") + D(w, "width") / 2;
+            double score = edge * 10000 + Math.Abs(wc - ac);
+            if (score < best) { best = score; t = w; }
+        }
+        string aId = a["id"] as string, tId = t["id"] as string;
+        string groupDir = group["tilingDirection"] as string;
+        swapping = true;
+        try {
+            // 1. T sale de su grupo hacia A:  [A | T | resto]
+            Request(c, "command focus --container-id " + tId);
+            Request(c, "command move --direction " + Opposite(dir));
+            // 2. A y T son vecinas: intercambiarlas:  [T | A | resto]
+            Request(c, "command focus --container-id " + aId);
+            Request(c, "command move --direction " + dir);
+            // 3. Meter A en el resto del grupo, en el sitio que dejó T.
+            var pa = PathOf(c, aId);
+            if (pa != null && pa.Count >= 2) {
+                var p2 = pa[pa.Count - 2]; var k2 = Kids(p2);
+                int j = k2.IndexOf(pa[pa.Count - 1]) + ((dir == "left" || dir == "up") ? -1 : 1);
+                var rest = (j >= 0 && j < k2.Count) ? k2[j] as System.Collections.Generic.Dictionary<string, object> : null;
+                while (rest != null && IsWrapper(rest)) rest = Kids(rest)[0] as System.Collections.Generic.Dictionary<string, object>;
+                if (rest != null && (rest["type"] as string) == "window") {
+                    // El resto quedó en una sola ventana C: apilar A y C como estaba el grupo.
+                    Request(c, "command set-tiling-direction " + groupDir);
+                    Request(c, "command focus --container-id " + (rest["id"] as string));
+                    Request(c, "command move --direction " + Opposite(dir));
+                } else if (rest != null) {
+                    Request(c, "command move --direction " + dir);
+                }
+            }
+            Request(c, "command focus --container-id " + aId);
+            if (Verbose) Log("swap " + dir + ": intercambio entre grupos");
+        } finally { swapping = false; }
+    }
+
     static void Swap(string dir) {
         lock (swapLock) {
             ClientWebSocket c = null;
@@ -166,20 +267,43 @@ public static class GlazeBridge {
                 int i = path.Count - 1;
                 while (i - 1 >= 1 && IsWrapper(path[i - 1])) i--;
                 var cur = path[i]; var par = path[i - 1];
-                System.Collections.Generic.Dictionary<string, object> sib = null;
+                System.Collections.Generic.Dictionary<string, object> sib = null, sameAxisSibling = null;
                 if ((par["tilingDirection"] as string) == axis) {
                     var kids = Kids(par);
                     int j = kids.IndexOf(cur) + delta;
                     if (j >= 0 && j < kids.Count) {
                         sib = kids[j] as System.Collections.Generic.Dictionary<string, object>;
                         while (sib != null && IsWrapper(sib)) sib = Kids(sib)[0] as System.Collections.Generic.Dictionary<string, object>;
+                        sameAxisSibling = sib;
                     }
                 }
                 bool sibIsTiledWindow = sib != null && (sib["type"] as string) == "window"
                     && ((sib["state"] as System.Collections.Generic.Dictionary<string, object>)["type"] as string) == "tiling";
-                if (!sibIsTiledWindow) { if (Verbose) Log("swap " + dir + ": sin vecina en el mismo grupo, no se hace nada"); return; }
+                if (sibIsTiledWindow) {
+                    Request(c, "command move --direction " + dir);
+                    if (Verbose) Log("swap " + dir + ": intercambiadas");
+                    return;
+                }
+                // Sin vecina en el mismo grupo: si hay alguna ventana en mosaico en esa
+                // dirección (otra columna/fila), mover allí con el move de GlazeWM
+                // (movewindow de Hyprland). Si no hay ninguna, no hacer nada: así
+                // nunca se crean filas/columnas a todo lo ancho.
+                var all = new System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>>();
+                CollectTiledWindows(path[0], all);
+                if (!HasWindowInDirection(win, all, dir)) { if (Verbose) Log("swap " + dir + ": no hay ventana en esa dirección, nada"); return; }
+
+                // Caso especial: la ventana está sola en su columna y al lado hay un grupo.
+                // Con move, la columna desaparecería y GlazeWM lo convertiría todo en
+                // filas. En su lugar: intercambio real con la ventana más cercana del grupo.
+                var parKids = Kids(par);
+                var rawSib = (sameAxisSibling != null) ? sameAxisSibling : null;
+                if ((par["tilingDirection"] as string) == axis && parKids.Count == 2 && rawSib != null
+                    && (rawSib["type"] as string) != "window") {
+                    SwapAcrossGroups(c, win, rawSib, dir);
+                    return;
+                }
                 Request(c, "command move --direction " + dir);
-                if (Verbose) Log("swap " + dir + ": intercambiadas");
+                if (Verbose) Log("swap " + dir + ": movida a otro grupo");
             } catch (Exception ex) { Log("swap: " + ex.Message); }
             finally { try { if (c != null) c.Abort(); } catch {} }
         }
@@ -327,7 +451,7 @@ public static class GlazeBridge {
             tileWake.WaitOne();
             while (true) {
                 string win, dir; DateTime at; bool switching;
-                lock (gate) { win = pendWin; dir = pendDir; at = pendAt; switching = target != null; }
+                lock (gate) { win = pendWin; dir = pendDir; at = pendAt; switching = target != null || swapping; }
                 if (win == null) break;
                 var wait = 50 - (DateTime.UtcNow - at).TotalMilliseconds;
                 if (wait > 0 || switching) { Thread.Sleep(wait > 0 ? (int)wait + 1 : 60); continue; }

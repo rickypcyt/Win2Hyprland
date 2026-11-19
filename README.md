@@ -69,7 +69,7 @@ The logic is the same as in Hyprland:
 | `Alt+W` | Close the window |
 | `Win+I` | Toggle floating / tiling (floating windows are centered and always stay above tiled ones, like in Hyprland; dialogs and installers open floating automatically) |
 | `Win+Shift+F` | Fullscreen |
-| `Win+←↑→↓` | Swap the window with its neighbor in the same group, like Hyprland's `swapwindow`. Does nothing if there's no window there, so it never turns columns into full-width rows. GlazeWM has no swap; the helper (`ahk/glaze-bridge.ps1`) implements it |
+| `Win+←↑→↓` | Like Hyprland's `swapwindow`: swaps with the neighbor in the same group; if the neighbor is in another column, moves the window there (a window alone in its column is swapped with the closest one instead, so the column doesn't collapse). Does nothing if there's no window in that direction, so it never turns columns into full-width rows. GlazeWM has no swap; the helper (`ahk/glaze-bridge.ps1`) implements it |
 | `Win+Shift+←↑→↓` | Move the window in that direction (GlazeWM `move`, can restructure the layout, like `movewindow`) |
 | `Win+M` | Change the tiling direction (horizontal / vertical) for the next window (dwindle takes over again on the next focus change) |
 
@@ -143,6 +143,10 @@ I use the WezTerm **nightly** build (`winget install wez.wezterm.nightly`). The 
 | `Ctrl+Alt+N` | New tab (intercepted by AutoHotkey's "next track", same as on Hyprland) |
 | `Ctrl+Shift+T` | New tab (WezTerm shortcut that does work) |
 | `Ctrl+PageUp` / `Ctrl+PageDown` | Previous / next tab |
+
+### PowerShell 7
+
+`ls` works like on Arch: it's GNU `ls` from Git for Windows instead of `Get-ChildItem`, with `ls` = `ls -a`, columns and the same colors as my zsh (blue folders, no green background, no executable color). `ll` and `la` work too. The profile lives in `powershell/profile.ps1`; `$PROFILE` just loads it.
 
 ### Neovim (my Linux config)
 
@@ -249,6 +253,7 @@ Win2Hyprland/
 ├── alacritty/alacritty.toml  ← main terminal
 ├── wezterm/wezterm.lua       ← alternative terminal (tabs/splits)
 ├── nvim/                     ← Neovim (init.lua, lua/, lazy-lock.json)
+├── powershell/profile.ps1   ← PowerShell 7 profile (Arch-like ls)
 ├── zsh/zshrc                 ← zsh config for WSL Arch (PowerShell-style prompt)
 ├── hyprland-reference.conf   ← my original Hyprland config
 └── CLAUDE.md                 ← notes for editing the config with Claude Code
