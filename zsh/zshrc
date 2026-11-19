@@ -28,5 +28,14 @@ source $ZSH/oh-my-zsh.sh
 export EDITOR=nvim
 export VISUAL=nvim
 
+# ---------- Colores de ls ----------
+# Los archivos de Windows (/mnt/c) se ven como "escribibles por todos" y
+# "ejecutables", y ls los pintaba con fondo verde y en verde. Aquí:
+#   ow/tw (carpeta escribible por otros) -> carpeta normal: azul, sin fondo
+#   ex    (ejecutable)                   -> sin color
+eval "$(dircolors -b)"
+export LS_COLORS="${LS_COLORS}:ow=01;34:tw=01;34:st=01;34:ex=00"
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
 # ---------- Estilo del prompt ----------
 [[ ! -f $POWERLEVEL9K_CONFIG_FILE ]] || source $POWERLEVEL9K_CONFIG_FILE
