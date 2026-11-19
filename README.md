@@ -1,57 +1,91 @@
-# Win2Hyprland
+<div align="center">
 
-**My Hyprland config, literally, ported to Windows 11.**
+# 🪟 ➜ 🐧 Win2Hyprland
 
-I used Linux with Hyprland and switched to Windows. But I didn't want to lose my workflow: automatic window tiling, workspaces on `Alt+number`, everything from the keyboard, and a top bar just like my Waybar. This repo is exactly that: I took my `hyprland.conf` and my Waybar and translated them, shortcut by shortcut, to tools that run on Windows.
+**My Hyprland setup, literally, ported to Windows 11.**
 
-It's fast and works well day to day. I can indulge my habit of hammering `Alt+1234 4321` at full speed without anything breaking (I explain how below).
+Tiling windows · dwindle layout · `Alt+number` workspaces · a Waybar-style bar · a kitty-like terminal · zsh on Arch · my Neovim config — all driven from the keyboard, just like on Linux.
 
-`hyprland-reference.conf` is my original Hyprland config, for comparison.
+`GlazeWM` · `Zebar` · `AutoHotkey v2` · `Alacritty` · `WSL Arch + zsh` · `Neovim` · `PowerShell 7` · `WezTerm`
 
----
-
-## What it uses (and its Linux equivalent)
-
-| On Hyprland | On Windows | File |
-|---|---|---|
-| Hyprland (tiling, workspaces, shortcuts) | [GlazeWM](https://github.com/glzr-io/glazewm) | `glzr/glazewm/config.yaml` |
-| Waybar | [Zebar](https://github.com/glzr-io/zebar) with a custom pack | `glzr/zebar/waybar/` |
-| `playerctl`, `swayosd`, `grim`/`slurp`… | [AutoHotkey v2](https://www.autohotkey.com/) | `ahk/hotkeys.ahk` |
-| kitty | [Alacritty](https://alacritty.org/) (main terminal, opens in ~50 ms) | `alacritty/alacritty.toml` |
-| kitty (tabs/splits) | [WezTerm](https://wezfurlong.org/wezterm/) (still configured, same look) | `wezterm/wezterm.lua` |
-| Neovim | Neovim (same config, plugins pinned by `lazy-lock.json`) | `nvim/` |
-| rofi | [Flow Launcher](https://www.flowlauncher.com/) | — (its own config) |
-
-## What it looks like
-
-- **Automatic tiling** with `gaps_in = 5` and `gaps_out = 10`, same as in Hyprland.
-- **Dwindle-style layout**, like Hyprland's `layout = dwindle`. Each new window splits the focused one along its long side. With three windows, the first one takes the whole left half and the other two stack on the right. GlazeWM doesn't do this natively; a small helper (`ahk/glaze-bridge.ps1`) sets the split direction every time a window gets focus.
-- **Rounded corners**, no borders or title bars.
-- **No transparency**: all windows are opaque (in Hyprland I had `inactive_opacity = 0.9`; I dropped it here).
-- **Focus follows the mouse**, like `follow_mouse = 1`.
-- **Workspaces pinned per monitor:** 1 on the external monitor and 2 to 5 on the laptop screen, as I had with `workspace = N, monitor:…`.
-- **35 px black top bar**, with JetBrainsMono Nerd Font and Catppuccin Mocha colors, just like my Waybar.
+</div>
 
 ---
 
-## Shortcuts
+I used Linux with Hyprland and moved to Windows, but I didn't want to lose the way I work. So I took my `hyprland.conf`, my Waybar, my kitty and my Neovim config and translated them, **shortcut by shortcut**, to tools that run on Windows. Where Windows or the tools couldn't do something, I wrote the missing piece myself (fast workspace switching, a dwindle autotiler, a Hyprland-style window swap, a recovery tool for lost windows…).
 
-The logic is the same as in Hyprland:
+It's fast and it holds up day to day. I can hammer `Alt+1234 4321` at full speed and nothing breaks.
 
-- **`Win`** (`$mainMod`): open apps and manage windows.
-- **`Alt`** (`$altMod`): workspaces.
-- **`Ctrl+Alt`**: media, brightness and utilities.
-- **`Ctrl+Alt+Shift`**: control of the window manager itself.
+> `hyprland-reference.conf` is my original Hyprland config, kept for comparison.
 
-### Applications
+## 📑 Contents
 
-| Shortcut | Opens | On Hyprland it was |
+- [The stack](#-the-stack)
+- [What it looks like](#-what-it-looks-like)
+- [Shortcuts](#%EF%B8%8F-shortcuts)
+- [Window layout: dwindle and swapping like Hyprland](#-window-layout-dwindle-and-swapping-like-hyprland)
+- [The bar](#-the-bar-zebar-waybar-style)
+- [Terminal: Alacritty + zsh on Arch](#-terminal-alacritty--zsh-on-arch)
+- [Neovim](#-neovim)
+- [PowerShell 7](#-powershell-7)
+- [WezTerm (alternative terminal)](#-wezterm-alternative-terminal)
+- [Under the hood](#-under-the-hood)
+- [Installation](#-installation)
+- [Repository layout](#-repository-layout)
+- [Known limitations](#-known-limitations)
+
+---
+
+## 🧱 The stack
+
+| On Hyprland / Linux | On Windows | Config |
 |---|---|---|
-| `Win+Enter` / `Alt+Enter` | Alacritty | kitty |
-| `Win+Space` | Flow Launcher (also `Alt+Space`) | rofi -show drun |
+| Hyprland (tiling, workspaces, binds) | [GlazeWM](https://github.com/glzr-io/glazewm) | `glzr/glazewm/config.yaml` |
+| Hyprland's dwindle layout & `swapwindow` | A small helper of mine (C# in PowerShell) | `ahk/glaze-bridge.ps1` |
+| Waybar | [Zebar](https://github.com/glzr-io/zebar) with my own widget pack | `glzr/zebar/waybar/` |
+| `playerctl`, `swayosd`, `grim`/`slurp`, extra binds | [AutoHotkey v2](https://www.autohotkey.com/) | `ahk/hotkeys.ahk` |
+| kitty | [Alacritty](https://alacritty.org/) | `alacritty/alacritty.toml` |
+| zsh on Arch | **zsh inside WSL2 Arch Linux** | `zsh/zshrc` |
+| Neovim | Neovim (same config on Windows *and* in Arch) | `nvim/` |
+| rofi | [Flow Launcher](https://www.flowlauncher.com/) | its own settings |
+| — | PowerShell 7 with an Arch-like `ls` | `powershell/profile.ps1` |
+| kitty tabs/splits | [WezTerm](https://wezfurlong.org/wezterm/) (optional) | `wezterm/wezterm.lua` |
+
+---
+
+## 🎨 What it looks like
+
+- **Automatic tiling** with `gaps_in = 5` and `gaps_out = 10`, exactly as in Hyprland.
+- **Dwindle layout**: each new window splits the focused one along its long side, so three windows become *one big window on the left, two stacked on the right*.
+- **Rounded corners**, no borders, no title bars, **no transparency** (every window is opaque).
+- **Focus follows the mouse** (`follow_mouse = 1`).
+- **Floating windows always stay on top** of tiled ones; dialogs and installers open floating and centered.
+- **Workspaces pinned per monitor**: 1 on the external monitor, 2–5 on the laptop screen.
+- **A 35 px black top bar** with JetBrainsMono Nerd Font and Catppuccin Mocha colors, a copy of my Waybar.
+- **Terminal**: solid black, white **SemiBold** JetBrainsMono Nerd Font 16, my kitty 16-color palette, block cursor.
+
+---
+
+## ⌨️ Shortcuts
+
+Same logic as my Hyprland config:
+
+| Modifier | Used for |
+|---|---|
+| **`Win`** (`$mainMod`) | apps and windows |
+| **`Alt`** (`$altMod`) | workspaces |
+| **`Ctrl+Alt`** | media, brightness, screenshots, utilities |
+| **`Ctrl+Alt+Shift`** | the window manager itself |
+
+### 🚀 Apps
+
+| Shortcut | Opens | On Hyprland |
+|---|---|---|
+| `Win+Enter` / `Alt+Enter` | Alacritty (zsh on Arch) | kitty |
+| `Win+Space` (also `Alt+Space`) | Flow Launcher | rofi -show drun |
+| `Win+C` | Neovim in Alacritty | kitty nvim |
 | `Win+E` | File Explorer | thunar |
 | `Win+F` | Brave | brave |
-| `Win+C` | WezTerm with Neovim | kitty nvim |
 | `Win+O` | Obsidian | obsidian |
 | `Win+S` | Spotify | spotify |
 | `Win+Z` | WhatsApp | zapzap |
@@ -62,168 +96,222 @@ The logic is the same as in Hyprland:
 | `Win+T` | Touchpad settings | toggle-touchpad.sh |
 | `Win+Q` | Lock the session | hyprlock |
 
-### Windows
+### 🪟 Windows
 
 | Shortcut | Action |
 |---|---|
 | `Alt+W` | Close the window |
-| `Win+I` | Toggle floating / tiling (floating windows are centered and always stay above tiled ones, like in Hyprland; dialogs and installers open floating automatically) |
+| `Win+I` | Toggle floating / tiling (floating = centered and always on top) |
 | `Win+Shift+F` | Fullscreen |
-| `Win+←↑→↓` | Like Hyprland's `swapwindow`: swaps with the neighbor in the same group; if the neighbor is in another column, moves the window there (a window alone in its column is swapped with the closest one instead, so the column doesn't collapse). Does nothing if there's no window in that direction, so it never turns columns into full-width rows. GlazeWM has no swap; the helper (`ahk/glaze-bridge.ps1`) implements it |
-| `Win+Shift+←↑→↓` | Move the window in that direction (GlazeWM `move`, can restructure the layout, like `movewindow`) |
-| `Win+M` | Change the tiling direction (horizontal / vertical) for the next window (dwindle takes over again on the next focus change) |
+| `Win+←` / `Win+→` | Move the window to the next column, **splitting the window there** (bspwm/Hyprland style). Swaps with a neighbor in the same row. See [below](#-window-layout-dwindle-and-swapping-like-hyprland). |
+| `Win+↑` / `Win+↓` | Swap with the window above / below |
+| `Win+Shift+←↑→↓` | Raw GlazeWM move (like `movewindow`; may reshape the layout) |
+| `Win+M` | Flip the split direction for the next window |
 
-### Workspaces
+### 🔢 Workspaces
 
 | Shortcut | Action |
 |---|---|
-| `Alt+1` … `Alt+9`, `Alt+0` | Go to workspace 1…10 |
-| `Alt+Shift+1` … `Alt+Shift+0` | Send the window to that workspace and stay where you are (`movetoworkspacesilent`) |
+| `Alt+1` … `Alt+9`, `Alt+0` | Go to workspace 1…10 (safe to hammer as fast as you like) |
+| `Alt+Shift+1` … `Alt+Shift+0` | Send the window there **and stay where you are** (`movetoworkspacesilent`) |
 
-### Monitors
+### 🖥️ Monitors
 
-| Shortcut | Action | On Hyprland it was |
+| Shortcut | Action | On Hyprland |
 |---|---|---|
 | `Win+Ctrl+L` | External monitor only | `Win+L` (extonly) |
 | `Win+Shift+L` | Extend to both monitors | `Win+Shift+L` (bothmons) |
 | `Ctrl+Alt+M` | Windows display switcher | monitors.sh |
 
-`Win+L` can't be used because Windows reserves it for locking the session.
+`Win+L` can't be rebound: Windows reserves it for locking.
 
-### Media, brightness and screenshots (AutoHotkey)
+### 🎵 Media, brightness, screenshots
 
 | Shortcut | Action |
 |---|---|
 | `Ctrl+Alt+P` | Play / pause |
 | `Ctrl+Alt+N` | Next track |
-| `Ctrl+Alt+]` or `Ctrl+Alt+'` | Brightness up 5 % |
-| `Ctrl+Alt+[` or `Ctrl+Alt+;` | Brightness down 5 % |
-| `Ctrl+Alt+U` | Screenshot of a region to the clipboard (formerly grim + slurp) |
+| `Ctrl+Alt+]` or `Ctrl+Alt+'` | Brightness +5 % (with an on-screen tooltip) |
+| `Ctrl+Alt+[` or `Ctrl+Alt+;` | Brightness −5 % |
+| `Ctrl+Alt+U` | Region screenshot to the clipboard (was grim + slurp) |
 | `Ctrl+Alt+0` | Night light settings |
 
-The keyboard's media and brightness keys work as usual.
+The keyboard's own media and brightness keys keep working.
 
-### GlazeWM
+### ⚙️ GlazeWM
 
 | Shortcut | Action |
 |---|---|
 | `Ctrl+Alt+Shift+R` | Reload the config |
-| `Ctrl+Alt+Shift+E` | Quit GlazeWM |
+| `Ctrl+Alt+Shift+E` | Quit GlazeWM cleanly (restores every window) |
 | `Ctrl+Alt+Shift+Space` | Pause / resume tiling |
-| `Ctrl+Alt+Shift+U` | Recover "lost" windows (see below) |
-
-**Lost windows:** GlazeWM hides (cloaks) the windows of workspaces you're not looking at. If it's killed instead of exited cleanly, those windows stay open but invisible. `scripts/uncloak.ps1` shows them again and GlazeWM picks them back up. It runs automatically every time GlazeWM starts, and on demand with `Ctrl+Alt+Shift+U`. To quit GlazeWM, use `Ctrl+Alt+Shift+E`; that exits cleanly and restores every window.
-
-### Terminal (Alacritty)
-
-`Win+Enter` opens **Alacritty**: the window shows up in about 30-130 ms, versus ~2 s for WezTerm, which is the closest thing to kitty's instant startup. It has the same look as my kitty/WezTerm: JetBrainsMono Nerd Font 16, solid black background, my 16-color palette, block cursor, padding 5, no title bar. It starts **zsh in WSL Arch in my Windows user folder** (the prompt shows it as a Windows path). It's ~0.5 s faster to open than PowerShell 7, and AutoHotkey keeps Arch running so there's no cold start. Alacritty has no tabs or splits; GlazeWM tiles the windows instead. `Ctrl+Shift+N` opens a new window.
-
-### Terminal (WezTerm, my kitty.conf translated)
-
-Same style as my kitty:
-- JetBrainsMono Nerd Font at 16.
-- Solid black background (no transparency) and my 16-color palette.
-- Block cursor and padding of 5.
-- Tabs on top in powerline style (only shown with two or more).
-
-**Linux commands:** WezTerm opens PowerShell 7 by default; `Ctrl+Shift+L` opens **zsh inside WSL2 (Arch Linux)** in a new tab. The zsh config is lean, without Oh My Zsh, and starts in ~25 ms. If Arch is stopped, its first shell takes a couple of seconds to boot WSL.
-
-The prompt looks like PowerShell's: `C:\Users\ricar>` when you're in a Windows folder (`/mnt/c/...`), and the plain Linux path in Linux folders. `~/.zshrc` is a symlink to `zsh/zshrc` in this repo.
-
-I use the WezTerm **nightly** build (`winget install wez.wezterm.nightly`). The 2024 stable build ships an old ConPTY that garbles the text when the window is resized, which happens all the time with a tiling WM.
-
-| Shortcut | Action |
-|---|---|
-| `Ctrl+Shift+L` | Pick a shell for a new tab: Arch (zsh), PowerShell 7, PowerShell 5.1, cmd |
-| `Ctrl+Alt+T` / `Ctrl+Alt+O` | Split: new terminal to the side |
-| `Ctrl+Alt+Y` | Split: new terminal below |
-| `Ctrl+Shift+←↑→↓` | Move between splits |
-| `Ctrl+Shift+Alt+←↑→↓` | Resize the split |
-| `Ctrl+Shift+W` | Close the active split |
-| `Ctrl+Alt+N` | New tab (intercepted by AutoHotkey's "next track", same as on Hyprland) |
-| `Ctrl+Shift+T` | New tab (WezTerm shortcut that does work) |
-| `Ctrl+PageUp` / `Ctrl+PageDown` | Previous / next tab |
-
-### PowerShell 7
-
-`ls` works like on Arch: it's GNU `ls` from Git for Windows instead of `Get-ChildItem`, with `ls` = `ls -a`, columns and the same colors as my zsh (blue folders, no green background, no executable color). `ll` and `la` work too. The profile lives in `powershell/profile.ps1`; `$PROFILE` just loads it.
-
-### Neovim (my Linux config)
-
-Same config as on Linux, with the plugins pinned to the same versions through `lazy-lock.json`. It includes Cyberdream, Telescope, nvim-tree, Treesitter, lualine, bufferline, harpoon, hop, LSP and formatting on save. The only changes for Windows:
-
-- lazy.nvim installs itself on first launch.
-- `:Kitty` / `:Term` open WezTerm in the current file's folder.
-- `:GCC` compiles the current `.c` with MSYS2 gcc and runs it in a WezTerm window.
-- `telescope-project` looks in `C:/coding` instead of `~/coding`.
-- `hop.nvim` points to the maintained fork `smoka7/hop.nvim`, because the original repo was deleted.
-
-The **same config is used inside WSL Arch**: `~/.config/nvim` is a symlink to this folder, so editing it once changes both. Arch has its own Neovim, plugins and language servers (installed with `pacman`), and the config detects the OS: on Arch, `:Kitty`/`:GCC` open WezTerm in the Arch domain and Telescope projects look in `/mnt/c/coding`. The clipboard is shared with Windows through `win32yank`.
-
-The main shortcuts (leader = `Space`) are the same as on Linux:
-
-- `Ctrl+F`: find files.
-- `Space ff` / `fg` / `fb` / `fe` / `fp`: Telescope files, grep, buffers, browser here and browser in the parent folder.
-- `Space e`: nvim-tree.
-- `Ctrl+S`: save and format.
-- `gd` / `K` / `gi`: LSP go to definition, hover and implementation.
+| `Ctrl+Alt+Shift+U` | Bring back "lost" windows ([why](#lost-windows)) |
 
 ---
 
-## The bar (Zebar, Waybar style)
+## 🌀 Window layout: dwindle and swapping like Hyprland
 
-It has the same modules as my Waybar:
+GlazeWM tiles like i3 (rows and columns), not like Hyprland/bspwm (a binary tree). Two pieces of `ahk/glaze-bridge.ps1` make it behave like my Hyprland:
 
-- **Left:**
-  - Workspaces 1 to 5, always visible. The active one is shown in blue and you can click to switch.
-  - System tray.
-  - Spotify: click to pause or resume, middle-click for next, right-click for previous. Shown in italics when paused.
-- **Center:** time `|` date `|` Ecuador time.
-- **Right:**
-  - CPU and RAM.
-  - Volume: the scroll wheel raises or lowers it, right-click mutes, and left-click opens the mixer.
-  - Battery, colored by charge level: green, blue, peach or red.
+**Dwindle autotiling.** Every time a tiled window gets focus, the helper looks at its shape: if it's wider than tall, the next window opens **beside** it; if it's taller than wide, **below** it.
 
-The bar is docked at the top and Windows reserves its space, so windows never slide underneath it.
+```
+1 window          2 windows          3 windows
++-----------+     +-----+-----+      +-----+-----+
+|           |     |     |     |      |     |  2  |
+|     1     | --> |  1  |  2  | -->  |  1  +-----+
+|           |     |     |     |      |     |  3  |
++-----------+     +-----+-----+      +-----+-----+
+```
 
-Compared to my Waybar it lacks CPU temperature and brightness, because Zebar has no source for that data.
+**`Win+arrows` like `swapwindow`.** GlazeWM has no "swap", and its `move` turned my two columns into full-width rows. The helper decides instead:
 
----
-
-## Why it doesn't break when typing fast
-
-On Hyprland I could hammer `Alt+1234 4321` and nothing happened, because the compositor itself manages workspaces. On Windows, GlazeWM has to hide and show every window manually. If keys arrived faster than it could keep up, keystrokes got lost, focus stayed on a hidden window, and the bar got out of sync.
-
-I fixed it with two changes:
-
-1. **`Alt+number` is handled by AutoHotkey, not GlazeWM.** AutoHotkey writes the number to a named pipe. A helper process (`ahk/glaze-bridge.ps1`) keeps a WebSocket open to GlazeWM and sends the switch right away, in about 46 ms instead of the ~270 ms it took to launch `glazewm.exe` for every key. If GlazeWM is busy, only the last key pressed is sent and the intermediate ones are discarded, so nothing piles up. When you stop pressing, it re-sends the last workspace once or twice, because GlazeWM sometimes jumps back to an earlier workspace after a burst.
-2. **The bar talks directly to GlazeWM** over its WebSocket (`127.0.0.1:6123`), bypassing Zebar's module, which used to freeze. It re-queries the state on every event, checks every 500 ms in case one is missed, and reconnects on its own if GlazeWM restarts.
-
-The bar stays in sync with GlazeWM in simulated bursts of up to 49 keystrokes in under 300 ms. The re-send step that guarantees landing on the last pressed workspace is newer and still being tested.
+- **Neighbor in the same row/column** → the two windows **swap**.
+- **Window in another column** (`Win+←/→`) → it acts like pressing the key **twice**: the window leaves its column and lands **under** the window on the other side, splitting it:
+  ```
+  +-----+-----+                 +-----+-----+
+  |  A  |     |                 |     |  B  |
+  +-----+  B  |   Win+→ on C    |  A  +-----+
+  |  C  |     |   ----------->  |     |  C  |
+  +-----+-----+                 +-----+-----+
+  ```
+- **Only two windows** → flips them between two rows and two columns.
+- **No window in that direction** → nothing happens, so the layout never collapses into full-width rows.
 
 ---
 
-## Installation
+## 📊 The bar (Zebar, Waybar style)
+
+Same modules as my Waybar:
+
+| Left | Center | Right |
+|---|---|---|
+| Workspaces 1–5 (active in blue, click to switch) | time `\|` date `\|` Ecuador time | CPU · RAM |
+| System tray | | Volume (scroll = change, right-click = mute, click = mixer) |
+| Spotify (click = play/pause, middle = next, right = previous; italic when paused) | | Battery (green / blue / peach / red) |
+
+The bar is docked: Windows reserves its 35 px so windows never slide under it, and fullscreen apps cover it. The workspace dots talk to GlazeWM directly over its WebSocket (Zebar's own GlazeWM module froze under fast switching), so they stay in sync.
+
+Compared to Waybar it lacks CPU temperature and brightness: Zebar has no source for them.
+
+---
+
+## 💻 Terminal: Alacritty + zsh on Arch
+
+`Win+Enter` (or `Alt+Enter`) opens **Alacritty** running **zsh inside WSL2 Arch Linux**, starting in my Windows user folder.
+
+- **Fast**: the window appears in ~30–130 ms and the shell is ready in ~0.75 s (PowerShell 7 took ~1.2 s). AutoHotkey keeps Arch running in the background, so there's never a WSL cold start.
+- **Looks like my kitty**: JetBrainsMono NF SemiBold 16, white text on solid black, my palette, block cursor, padding 5, no title bar. `Ctrl+Shift+N` opens another window; GlazeWM tiles them (Alacritty has no tabs/splits).
+- **Prompt like PowerShell's**: in Windows folders it shows the Windows path, e.g. `C:\Users\ricar>`; in Linux folders, the Linux path (`/home/ricky>`).
+- **Lean zsh** (no Oh My Zsh, starts in ~25 ms): menu completion that ignores case, shared history, `↑` searches history for what you've typed, `Ctrl+←/→` jump words, title = current folder.
+- **`ls` = `ls -a`** with clean colors: folders on `C:\` are blue without the green "world-writable" background and files aren't painted green as executables. `ll` and `la` too.
+- **Windows tools without `.exe`**: if a command doesn't exist in Linux, zsh runs its Windows version, so `keytool`, `java`, `javac`… just work.
+- **`cmd` habits work**: `type file` shows a file, plus `cls`, `copy`, `move`, `ren`, `del`, `md`, `rd`.
+- **Shared clipboard** with Windows (`win32yank`), and `pwsh` is one word away when I need PowerShell.
+
+Behind it: Arch user `ricky` with `sudo`, set as the default WSL user and distro; `/mnt/c` mounted with `umask=022` so folders don't show as world-writable (without `fmask`, so Windows `.exe` files stay runnable); `~/.zshrc` is a symlink to `zsh/zshrc` in this repo.
+
+---
+
+## 📝 Neovim
+
+My Linux config, **unchanged where possible**, with plugins pinned to the same versions through `lazy-lock.json`: Cyberdream, Telescope, nvim-tree, Treesitter, lualine, bufferline, harpoon, hop, LuaSnip, nvim-surround, autopairs, LSP (lua_ls, pyright, clangd, cssls/html, typescript-tools) and format-on-save.
+
+**One config, two systems.** On Windows `%LOCALAPPDATA%\nvim` and inside Arch `~/.config/nvim` both point to `nvim/`, so editing it once changes both. Each system has its own plugins and language servers, and the config detects where it runs:
+
+| Command | Windows | Arch |
+|---|---|---|
+| `:Kitty` / `:Term` | Alacritty with zsh in the file's folder | same |
+| `:GCC` | compile with MSYS2 gcc, run in a new Alacritty | compile with gcc, run in a new Alacritty |
+| Telescope projects | `C:/coding` | `/mnt/c/coding` |
+
+Other Windows fixes: lazy.nvim installs itself on first launch, and `hop.nvim` points to the maintained fork `smoka7/hop.nvim` (the original repo was deleted).
+
+Main keys (leader = `Space`): `Ctrl+F` find files · `Space ff/fg/fb/fe/fp` Telescope files/grep/buffers/browser/parent · `Space e` nvim-tree · `Ctrl+S` save + format · `gd` / `K` / `gi` LSP.
+
+---
+
+## 🔷 PowerShell 7
+
+`ls` behaves like on Arch: it's GNU `ls` from Git for Windows instead of `Get-ChildItem`, with `ls` = `ls -a`, columns and the same colors as zsh. `ll` and `la` work too. The profile lives in `powershell/profile.ps1`; `$PROFILE` just loads it.
+
+---
+
+## 🧰 WezTerm (alternative terminal)
+
+Still configured with the same look, for when I want tabs and splits like kitty: `Ctrl+Alt+T`/`O` split beside, `Ctrl+Alt+Y` split below, `Ctrl+Shift+arrows` move between splits, `Ctrl+Shift+Alt+arrows` resize, `Ctrl+Shift+W` close, `Ctrl+Shift+T` new tab, `Ctrl+PageUp/Down` switch tabs, and `Ctrl+Shift+L` picks a shell (Arch zsh, PowerShell 7, PowerShell 5.1, cmd). It opens PowerShell 7 by default and needs the **nightly** build: the 2024 stable one garbles text on resize. It takes ~2 s to open, which is why Alacritty is the main terminal.
+
+---
+
+## 🔧 Under the hood
+
+### Fast, unbreakable `Alt+number`
+
+On Hyprland the compositor owns workspaces, so mashing `Alt+1234 4321` is fine. On Windows, GlazeWM hides and shows every window by hand, and fast keys used to get lost, leave focus on a hidden window and freeze the bar. Now:
+
+1. **AutoHotkey** catches `Alt+number` and writes it to a named pipe (~1 ms).
+2. **`glaze-bridge.ps1`** keeps a WebSocket open to GlazeWM and sends the switch in **~46 ms** (launching `glazewm.exe` per key took ~270 ms). If GlazeWM is still busy, only the **last** key is sent. When you stop, it re-sends the final workspace once or twice, because GlazeWM sometimes jumps back after a burst.
+3. **The bar** reads workspaces straight from GlazeWM's WebSocket and reconnects by itself.
+
+### Lost windows
+
+GlazeWM hides (cloaks) windows on workspaces you aren't viewing. If it's killed instead of quit, they stay open but invisible. `scripts/uncloak.ps1` finds them and shows them again so GlazeWM picks them back up. It runs automatically every time GlazeWM starts, and on demand with `Ctrl+Alt+Shift+U`. Quit with `Ctrl+Alt+Shift+E` to avoid it altogether.
+
+### Small things that add up
+
+- Floating windows use `shown_on_top`, so an installer never hides behind a tiled window.
+- Alacritty uses the normal window frame and GlazeWM strips the title bar, which avoids a border flash when the mouse moves focus.
+- The terminal font family is `JetBrainsMono NF`, the name the Nerd Font registers on Windows; `JetBrainsMono Nerd Font` silently falls back to another font in Alacritty.
+
+---
+
+## 📦 Installation
+
+**1. Apps**
 
 ```powershell
 winget install glzr-io.glazewm
 winget install glzr-io.zebar
 winget install AutoHotkey.AutoHotkey
-winget install wez.wezterm.nightly
+winget install Alacritty.Alacritty
 winget install Flow-Launcher.Flow-Launcher
 winget install Neovim.Neovim
+winget install Git.Git
+winget install Microsoft.PowerShell
 winget install DEVCOM.JetBrainsMonoNerdFont
+winget install wez.wezterm.nightly   # optional
 ```
 
-Clone the repo into `C:\Users\<your user>\Win2Hyprland` and link the config folders with junctions (no admin rights needed):
+**2. Clone and link the configs** (junctions need no admin rights). Clone into `C:\Users\<you>\Win2Hyprland`, then:
 
 ```powershell
-New-Item -ItemType Junction -Path "$env:USERPROFILE\.glzr" -Target "$env:USERPROFILE\Win2Hyprland\glzr"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.glzr"          -Target "$env:USERPROFILE\Win2Hyprland\glzr"
+New-Item -ItemType Junction -Path "$env:APPDATA\alacritty"          -Target "$env:USERPROFILE\Win2Hyprland\alacritty"
+New-Item -ItemType Junction -Path "$env:LOCALAPPDATA\nvim"          -Target "$env:USERPROFILE\Win2Hyprland\nvim"
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.config\wezterm" -Target "$env:USERPROFILE\Win2Hyprland\wezterm"
-New-Item -ItemType Junction -Path "$env:LOCALAPPDATA\nvim" -Target "$env:USERPROFILE\Win2Hyprland\nvim"
+Set-Content $PROFILE ". '$env:USERPROFILE\Win2Hyprland\powershell\profile.ps1'"
 ```
 
-For Neovim, also install the tools its plugins use. Then open `nvim` once, or run `nvim --headless "+Lazy! restore" +qa`, so lazy.nvim downloads the plugins:
+**3. Arch Linux in WSL**
+
+```powershell
+wsl --install -d archlinux
+wsl --set-default archlinux
+```
+
+Inside Arch (as root): `pacman -Syu zsh git sudo`, create your user in the `wheel` group with zsh as its shell, give `wheel` sudo, and put this in `/etc/wsl.conf`:
+
+```ini
+[user]
+default=ricky
+
+[automount]
+options = "metadata,umask=022"
+```
+
+Then, as your user: `ln -s /mnt/c/Users/<you>/Win2Hyprland/zsh/zshrc ~/.zshrc`.
+
+**4. Neovim tools**
 
 ```powershell
 winget install BurntSushi.ripgrep.MSVC
@@ -233,34 +321,50 @@ winget install LuaLS.lua-language-server
 npm install -g pyright vscode-langservers-extracted prettier
 ```
 
-clangd and gcc come from [MSYS2](https://www.msys2.org/) (UCRT64): `pacman -S mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-clang-tools-extra`.
+gcc and clangd come from [MSYS2](https://www.msys2.org/) UCRT64. Inside Arch: `pacman -S neovim ripgrep fd gcc clang lua-language-server stylua pyright prettier nodejs npm`, then `ln -s /mnt/c/Users/<you>/Win2Hyprland/nvim ~/.config/nvim`. Run `nvim --headless "+Lazy! restore" +qa` on each side to fetch the plugins.
 
-Then open GlazeWM. It launches Zebar and the AutoHotkey shortcuts.
+**5. Start GlazeWM.** It launches Zebar and AutoHotkey, and AutoHotkey launches the helper.
 
-Some paths in `glzr/glazewm/config.yaml` contain my username (`C:/Users/ricar/...`): the AutoHotkey script, Brave, Obsidian, Discord and Flow Launcher. Replace them with yours. The monitor indices in `bind_to_monitor` depend on your display setup; you can see them with `glazewm query monitors`.
+> Some paths contain my username (`C:/Users/ricar/...`, the Arch user `ricky`): GlazeWM's app launchers, the AutoHotkey script path, Alacritty's start folder and `zsh/zshrc`. Replace them with yours. Monitor indices in `bind_to_monitor` depend on your displays (`glazewm query monitors`).
 
-## Structure
+---
+
+## 🗂️ Repository layout
 
 ```
 Win2Hyprland/
 ├── glzr/
-│   ├── glazewm/config.yaml   ← tiling, gaps, workspaces, shortcuts
+│   ├── glazewm/config.yaml    ← tiling, gaps, workspaces, window rules, binds
 │   └── zebar/
-│       ├── settings.json     ← which bar starts
-│       └── waybar/           ← the bar: bar.html, styles.css, zpack.json
-├── ahk/hotkeys.ahk           ← Alt+number, media, brightness, screenshots
-├── ahk/glaze-bridge.ps1      ← fast workspace switching + dwindle autotiling
-├── alacritty/alacritty.toml  ← main terminal
-├── wezterm/wezterm.lua       ← alternative terminal (tabs/splits)
-├── nvim/                     ← Neovim (init.lua, lua/, lazy-lock.json)
-├── powershell/profile.ps1   ← PowerShell 7 profile (Arch-like ls)
-├── zsh/zshrc                 ← zsh config for WSL Arch (PowerShell-style prompt)
-├── hyprland-reference.conf   ← my original Hyprland config
-└── CLAUDE.md                 ← notes for editing the config with Claude Code
+│       ├── settings.json      ← which bar starts
+│       └── waybar/            ← the bar: bar.html · styles.css · zpack.json
+├── ahk/
+│   ├── hotkeys.ahk            ← Alt+number, Win+arrows, media, brightness, screenshots
+│   └── glaze-bridge.ps1       ← fast workspaces · dwindle autotiling · Hyprland-style swap
+├── scripts/
+│   ├── uncloak.ps1            ← recover lost windows
+│   └── autotile.py            ← standalone autotiler (not used; the bridge does it)
+├── alacritty/alacritty.toml   ← main terminal
+├── zsh/zshrc                  ← zsh for WSL Arch
+├── powershell/profile.ps1     ← PowerShell 7 profile (Arch-like ls)
+├── nvim/                      ← Neovim (Windows + Arch)
+├── wezterm/wezterm.lua        ← alternative terminal (tabs/splits)
+├── hyprland-reference.conf    ← my original Hyprland config
+└── CLAUDE.md                  ← notes for editing all this with Claude Code
 ```
 
-## What can't be matched
+---
 
-- **Blur:** Windows doesn't allow it.
-- **`Win+L`:** reserved by Windows.
-- **No equivalent yet:** hiding the bar (`Win+P`), power menu (`Win+Escape`), switching audio output (`Ctrl+Alt+V`) and power profile (`Ctrl+Alt+B`).
+## 🚧 Known limitations
+
+- **Blur**: Windows doesn't allow it.
+- **`Win+L`**: reserved by Windows.
+- **Swapping across columns** is emulated on top of GlazeWM (it has no binary tree), so a few unusual layouts can still need a second key press. A true BSP window manager such as Komorebi would remove that limitation.
+- **No equivalent yet** for hiding the bar (`Win+P`), the power menu (`Win+Escape`), switching audio output (`Ctrl+Alt+V`) and the power profile (`Ctrl+Alt+B`).
+- **clangd on Windows** needs an up-to-date MSYS2 (`pacman -Syu`); inside Arch it works out of the box.
+
+<div align="center">
+
+*Made because I missed Hyprland.* 🐧
+
+</div>
