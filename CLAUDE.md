@@ -11,7 +11,7 @@ Repo público: https://github.com/rickypcyt/Win2Hyprland. Hacer `git push` solo 
 | GlazeWM 3.x | gestor de ventanas tiling (Hyprland) | `glzr/glazewm/config.yaml` | `~\.glzr` es un **junction** a `Win2Hyprland\glzr` |
 | Zebar | barra superior (Waybar) | `glzr/zebar/waybar/` (pack propio: `bar.html` lógica, `styles.css` colores Catppuccin, `zpack.json` tamaño/permisos); `glzr/zebar/settings.json` elige el pack | mismo junction |
 | AutoHotkey v2 | atajos que GlazeWM no puede: multimedia, brillo, capturas | `ahk/hotkeys.ahk` | lo lanza GlazeWM en `startup_commands` |
-| Alacritty | terminal principal (kitty), abre en ~50 ms | `alacritty/alacritty.toml` | `%APPDATA%lacritty` es un **junction** a `Win2Hyprlandlacritty` (creado fuera del paquete). Win+Enter / Win+C lo lanzan con la ruta 8.3 `C:/PROGRA~1/ALACRI~1/ALACRI~1.EXE` |
+| Alacritty | terminal principal (kitty), abre en ~50 ms | `alacritty/alacritty.toml` | `%APPDATA%\alacritty` es un **junction** a `Win2Hyprland\alacritty` (creado fuera del paquete). Win+Enter / Win+C lo lanzan con la ruta 8.3 `C:/PROGRA~1/ALACRI~1/ALACRI~1.EXE` |
 | WezTerm | terminal alternativa (pestañas/divisiones) | `wezterm/wezterm.lua` | `~\.config\wezterm` es un **junction** a `Win2Hyprland\wezterm` |
 | Neovim 0.12 | editor (misma config que en Linux) | `nvim/` (lazy.nvim; `lazy-lock.json` fija versiones) | `%LOCALAPPDATA%\nvim` es un **junction** a `Win2Hyprland\nvim`; plugins en `%LOCALAPPDATA%\nvim-data\lazy` |
 | Flow Launcher | lanzador (rofi) | *no está en el repo* | `%LOCALAPPDATA%\FlowLauncher\Settings\Settings.json` (Flow lo sobrescribe al salir: cerrar Flow antes de editarlo) |
