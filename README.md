@@ -17,7 +17,8 @@ It's fast and works well day to day. I can indulge my habit of hammering `Alt+12
 | Hyprland (tiling, workspaces, shortcuts) | [GlazeWM](https://github.com/glzr-io/glazewm) | `glzr/glazewm/config.yaml` |
 | Waybar | [Zebar](https://github.com/glzr-io/zebar) with a custom pack | `glzr/zebar/waybar/` |
 | `playerctl`, `swayosd`, `grim`/`slurp`… | [AutoHotkey v2](https://www.autohotkey.com/) | `ahk/hotkeys.ahk` |
-| kitty | [WezTerm](https://wezfurlong.org/wezterm/) | `wezterm/wezterm.lua` |
+| kitty | [Alacritty](https://alacritty.org/) (main terminal, opens in ~50 ms) | `alacritty/alacritty.toml` |
+| kitty (tabs/splits) | [WezTerm](https://wezfurlong.org/wezterm/) (still configured, same look) | `wezterm/wezterm.lua` |
 | Neovim | Neovim (same config, plugins pinned by `lazy-lock.json`) | `nvim/` |
 | rofi | [Flow Launcher](https://www.flowlauncher.com/) | — (its own config) |
 
@@ -109,6 +110,10 @@ The keyboard's media and brightness keys work as usual.
 | `Ctrl+Alt+Shift+R` | Reload the config |
 | `Ctrl+Alt+Shift+E` | Quit GlazeWM |
 | `Ctrl+Alt+Shift+Space` | Pause / resume tiling |
+
+### Terminal (Alacritty)
+
+`Win+Enter` opens **Alacritty**: the window shows up in about 30-130 ms, versus ~2 s for WezTerm, which is the closest thing to kitty's instant startup. It has the same look as my kitty/WezTerm: JetBrainsMono Nerd Font 16, solid black background, my 16-color palette, block cursor, padding 5, no title bar. It starts **zsh in WSL Arch as ricky in my Windows user folder**. Alacritty has no tabs or splits; GlazeWM tiles the windows instead. `Ctrl+Shift+N` opens a new window.
 
 ### Terminal (WezTerm, my kitty.conf translated)
 
@@ -238,7 +243,8 @@ Win2Hyprland/
 │       └── waybar/           ← the bar: bar.html, styles.css, zpack.json
 ├── ahk/hotkeys.ahk           ← Alt+number, media, brightness, screenshots
 ├── ahk/glaze-bridge.ps1      ← fast workspace switching + dwindle autotiling
-├── wezterm/wezterm.lua       ← terminal
+├── alacritty/alacritty.toml  ← main terminal
+├── wezterm/wezterm.lua       ← alternative terminal (tabs/splits)
 ├── nvim/                     ← Neovim (init.lua, lua/, lazy-lock.json)
 ├── zsh/zshrc                 ← zsh config for WSL Arch (PowerShell-style prompt)
 ├── hyprland-reference.conf   ← my original Hyprland config

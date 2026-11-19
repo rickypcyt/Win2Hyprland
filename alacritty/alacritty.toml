@@ -1,0 +1,104 @@
+# Alacritty: misma apariencia que wezterm\wezterm.lua (traducción de kitty.conf)
+# Archivo real: C:\Users\ricar\Win2Hyprland\alacritty\alacritty.toml
+# (%APPDATA%\alacritty es un junction a Win2Hyprland\alacritty)
+# Alacritty recarga este archivo automáticamente al guardarlo.
+#
+# Diferencias con WezTerm: Alacritty no tiene pestañas, divisiones ni menú
+# de shells (Ctrl+Shift+L). Para eso: varias ventanas + GlazeWM.
+
+[general]
+live_config_reload = true
+
+# ---------- Shell ----------
+# Igual que WezTerm: zsh en WSL Arch como ricky, empezando en C:\Users\ricar.
+# Para PowerShell 7 en su lugar:  program = "pwsh.exe"  args = ["-NoLogo"]
+[terminal.shell]
+program = "wsl.exe"
+args = ["-d", "archlinux", "-u", "ricky", "--cd", "/mnt/c/Users/ricar"]
+
+# ---------- Fuente ----------
+# Si no la encuentra, prueba family = "JetBrainsMono NF"
+# (nombre con el que se registra en algunas versiones de la Nerd Font).
+[font]
+size = 16.0
+
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
+
+[font.bold]
+family = "JetBrainsMono Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "JetBrainsMono Nerd Font"
+style = "Italic"
+
+[font.bold_italic]
+family = "JetBrainsMono Nerd Font"
+style = "Bold Italic"
+
+# ---------- Colores ----------
+[colors.primary]
+foreground = "#e0e0e0"
+background = "#000000"
+
+[colors.cursor]
+text = "#000000"
+cursor = "#ffffff"
+
+[colors.selection]
+text = "#000000"
+background = "#b3d7ff"
+
+# color0..color7
+[colors.normal]
+black   = "#2e2e2e"
+red     = "#ff3333"
+green   = "#00ff00"
+yellow  = "#ffff00"
+blue    = "#0f63eb"
+magenta = "#e015aa"
+cyan    = "#00ffff"
+white   = "#d0d0d0"
+
+# color8..color15
+[colors.bright]
+black   = "#666666"
+red     = "#ff6666"
+green   = "#33ff33"
+yellow  = "#ffff33"
+blue    = "#3399ff"
+magenta = "#ff33ff"
+cyan    = "#33ffff"
+white   = "#ffffff"
+
+# ---------- Ventana ----------
+[window]
+padding = { x = 5, y = 5 }   # window_padding 5
+decorations = "None"         # sin barra de título (como 'RESIZE' en WezTerm)
+opacity = 1.0                # negro sólido
+
+# ---------- Scroll ----------
+[scrolling]
+history = 5000
+
+# ---------- Campana ----------
+[bell]
+duration = 0
+
+# ---------- Cursor y ratón ----------
+[cursor.style]
+shape = "Block"
+blinking = "Never"           # SteadyBlock
+
+[mouse]
+hide_when_typing = true
+
+# ---------- Atajos ----------
+# Sin pestañas: Ctrl+Shift+N abre una ventana nueva (GlazeWM la coloca).
+# (Ctrl+Alt+N no sirve: AutoHotkey lo usa para "siguiente canción".)
+[[keyboard.bindings]]
+key = "N"
+mods = "Control|Shift"
+action = "CreateNewWindow"

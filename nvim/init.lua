@@ -1,22 +1,21 @@
 -- La misma config se usa en Windows y en Arch (WSL): ~/.config/nvim enlaza aquí.
 local IS_WIN = vim.fn.has("win32") == 1
-local WSL_DOMAIN = "WSL:archlinux"
+-- Terminal: Alacritty (en Linux era kitty). Desde Arch se llama a su .exe de Windows.
+local TERM = IS_WIN and "alacritty" or "alacritty.exe"
+-- Abrir zsh de Arch en una carpeta (wsl --cd acepta rutas de Windows y de Linux)
+local function arch_shell(dir, ...)
+        return vim.list_extend({ TERM, "-e", "wsl.exe", "-d", "archlinux", "-u", "ricky", "--cd", dir }, { ... })
+end
 
--- Abrir una terminal (WezTerm, en Linux era kitty) en la carpeta del archivo actual.
+-- Abrir una terminal en la carpeta del archivo actual: zsh de Arch, desde Windows o desde Arch.
 -- :Kitty se mantiene por costumbre; :Term hace lo mismo.
--- Windows: PowerShell en esa carpeta. Arch: zsh en esa carpeta.
 local function open_terminal()
-        local path = vim.fn.expand("%:p:h")
-        if IS_WIN then
-                vim.fn.jobstart({ "wezterm-gui", "start", "--domain", "local", "--cwd", path }, { detach = true })
-        else
-                vim.fn.jobstart({ "wezterm.exe", "start", "--domain", WSL_DOMAIN, "--cwd", path }, { detach = true })
-        end
+        vim.fn.jobstart(arch_shell(vim.fn.expand("%:p:h")), { detach = true })
 end
 vim.api.nvim_create_user_command("Kitty", open_terminal, { desc = "Terminal en la carpeta del archivo" })
 vim.api.nvim_create_user_command("Term", open_terminal, { desc = "Terminal en la carpeta del archivo" })
 
--- GCC: compilar el .c actual y ejecutarlo en una ventana de WezTerm que se queda abierta
+-- GCC: compilar el .c actual y ejecutarlo en una ventana de Alacritty que se queda abierta
 -- Windows: gcc de MSYS2 UCRT64 (genera nombre.exe). Arch: gcc de Linux (genera ./nombre).
 vim.api.nvim_create_user_command("GCC", function()
         local dir = vim.fn.expand("%:p:h")
@@ -28,12 +27,11 @@ vim.api.nvim_create_user_command("GCC", function()
                 return
         end
         if IS_WIN then
-                vim.fn.jobstart({ "wezterm-gui", "start", "--domain", "local", "--cwd", dir, "--", "cmd", "/k", name .. ".exe" }, { detach = true })
+                vim.fn.jobstart({ TERM, "--working-directory", dir, "-e", "cmd", "/k", name .. ".exe" }, { detach = true })
         else
-                vim.fn.jobstart({ "wezterm.exe", "start", "--domain", WSL_DOMAIN, "--cwd", dir, "--",
-                        "zsh", "-c", "./" .. name .. "; exec zsh" }, { detach = true })
+                vim.fn.jobstart(arch_shell(dir, "--", "zsh", "-c", "./" .. name .. "; exec zsh"), { detach = true })
         end
-end, { desc = "Compilar y ejecutar el archivo C en WezTerm" })
+end, { desc = "Compilar y ejecutar el archivo C en Alacritty" })
 
 -- Restaurar cursor al abrir archivos
 vim.api.nvim_create_autocmd("BufReadPost", {

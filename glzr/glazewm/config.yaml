@@ -18,10 +18,12 @@
 # ============================================================
 
 general:
-  # Al arrancar: barra (Zebar) + atajos de AutoHotkey.
+  # Al arrancar: barra (Zebar) + atajos de AutoHotkey + autotiling.
   startup_commands:
     - 'shell-exec zebar'
     - 'shell-exec C:/Users/ricar/Win2Hyprland/ahk/hotkeys.ahk'
+    # Autotiling tipo dwindle (i3-autolayout): elige split según ancho/alto
+    - 'shell-exec pythonw C:/Users/ricar/Win2Hyprland/scripts/autotile.py'
   shutdown_commands:
     - 'shell-exec taskkill /IM zebar.exe /F'
   config_reload_commands: []
@@ -140,8 +142,9 @@ keybindings:
   # ----------------------------------------------------------
   # APLICACIONES
   # ----------------------------------------------------------
-  # $terminal = kitty  → WezTerm
-  - commands: ['shell-exec wezterm-gui']
+  # $terminal = kitty  → Alacritty (abre zsh en Arch, en C:/Users/ricar; ver alacritty/alacritty.toml)
+  # Ruta 8.3 de C:/Program Files/Alacritty/alacritty.exe: shell-exec falla con espacios.
+  - commands: ['shell-exec C:/PROGRA~1/ALACRI~1/ALACRI~1.EXE']
     bindings: ['lwin+enter']
 
   # $menu = rofi -show drun  → Flow Launcher
@@ -158,7 +161,7 @@ keybindings:
     bindings: ['lwin+f']
 
   # $code = kitty nvim
-  - commands: ['shell-exec wezterm-gui start --domain local -- nvim']
+  - commands: ['shell-exec C:/PROGRA~1/ALACRI~1/ALACRI~1.EXE --working-directory C:/Users/ricar -e nvim']
     bindings: ['lwin+c']
 
   # kitty nmtui  → ajustes de red / Wi-Fi
