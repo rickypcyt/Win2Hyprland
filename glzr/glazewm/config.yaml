@@ -81,7 +81,9 @@ window_behavior:
   state_defaults:
     floating:
       centered: true
-      shown_on_top: false
+      # Flotantes siempre por encima de las de mosaico (como en Hyprland):
+      # si no, al tocar la ventana grande el instalador/diálogo se iba detrás.
+      shown_on_top: true
     fullscreen:
       maximized: false
       shown_on_top: false
@@ -132,10 +134,15 @@ window_rules:
       - window_process: { equals: 'SearchHost' }
       - window_title: { regex: 'Windows Security' }
 
-  # Diálogos (Abrir/Guardar, etc.) flotando en vez de en mosaico.
+  # Diálogos (Abrir/Guardar, etc.) e instaladores flotando y centrados,
+  # en vez de en mosaico.
   - commands: ['set-floating --centered']
     match:
       - window_class: { regex: '^#32770$' }
+      # Instaladores: Inno Setup (TWizardForm/TSetupForm) y MSI
+      - window_class: { regex: '^(TWizardForm|TSetupForm|MsiDialog(No)?CloseClass)$' }
+      # Cualquier proceso tipo setup.exe / installer / desinstalador
+      - window_process: { regex: '(?i)(setup|install|unins)' }
 
 
 keybindings:
