@@ -1,0 +1,32 @@
+# ============================================================
+# zsh en WSL Arch
+# ============================================================
+# ~/.zshrc es un symlink a este archivo:
+#   /mnt/c/Users/ricar/Win2Hyprland/zsh/zshrc
+# Prompt: Powerlevel10k (tema de Oh My Zsh). Su estilo está en p10k.zsh,
+# en esta misma carpeta. Para cambiarlo:  p10k configure
+# ============================================================
+
+W2H_ZSH=/mnt/c/Users/ricar/Win2Hyprland/zsh
+
+# Instant prompt de Powerlevel10k: el prompt aparece al instante mientras
+# carga el resto. Tiene que ir arriba del todo.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# Dónde guarda/lee Powerlevel10k su config (p10k configure escribe aquí)
+POWERLEVEL9K_CONFIG_FILE=$W2H_ZSH/p10k.zsh
+
+# ---------- Oh My Zsh ----------
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="powerlevel10k/powerlevel10k"
+plugins=(git)
+source $ZSH/oh-my-zsh.sh
+
+# ---------- Preferencias ----------
+export EDITOR=nvim
+export VISUAL=nvim
+
+# ---------- Estilo del prompt ----------
+[[ ! -f $POWERLEVEL9K_CONFIG_FILE ]] || source $POWERLEVEL9K_CONFIG_FILE

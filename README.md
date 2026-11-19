@@ -120,6 +120,8 @@ Same style as my kitty:
 
 **Linux commands:** WezTerm opens **zsh + Oh My Zsh inside WSL2 (Arch Linux)** by default, so it feels like the terminal I had on Linux. If the `archlinux` distro isn't installed, it falls back to PowerShell 7. Windows-only things (Neovim with `Win+C`, `:GCC`) are launched in the local Windows domain.
 
+The prompt is **Powerlevel10k** on top of Oh My Zsh. `~/.zshrc` is a symlink to `zsh/zshrc` in this repo, and the prompt style is saved to `zsh/p10k.zsh`. Run `p10k configure` to change it.
+
 I use the WezTerm **nightly** build (`winget install wez.wezterm.nightly`). The 2024 stable build ships an old ConPTY that garbles the text when the window is resized, which happens all the time with a tiling WM.
 
 | Shortcut | Action |
@@ -238,6 +240,7 @@ Win2Hyprland/
 ├── ahk/glaze-bridge.ps1      ← fast workspace switching + dwindle autotiling
 ├── wezterm/wezterm.lua       ← terminal
 ├── nvim/                     ← Neovim (init.lua, lua/, lazy-lock.json)
+├── zsh/                      ← zshrc + Powerlevel10k style (WSL Arch)
 ├── hyprland-reference.conf   ← my original Hyprland config
 └── CLAUDE.md                 ← notes for editing the config with Claude Code
 ```
