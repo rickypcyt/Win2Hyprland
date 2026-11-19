@@ -76,7 +76,20 @@ public static class GlazeBridge {
                 while ((line = r.ReadLine()) != null) {
                     line = line.Trim();
                     if (line.Length == 0) continue;
-                    if (line.StartsWith("swap ")) {          // Win+flechas
+                    if (line.StartsWith("swap2 ")) {         // Win+←/→: como pulsar dos veces
+                        var dir2 = line.Substring(6);
+                        new Thread(() => {
+                            lock (swap2Lock) {
+                                Swap(dir2);
+                                // Si la 1.ª fue un intercambio, la 2.ª lo desharía: no repetir.
+                                // Solo se repite tras un movimiento a otro grupo (el caso que
+                                // necesitaba dos pulsaciones); no tras intercambios ni 2 ventanas.
+                                if (lastSwapKind == "move") { Thread.Sleep(60); Swap(dir2); }
+                            }
+                        }) { IsBackground = true }.Start();
+                        continue;
+                    }
+                    if (line.StartsWith("swap ")) {          // Win+↑/↓
                         var dir = line.Substring(5);
                         new Thread(() => Swap(dir)) { IsBackground = true }.Start();
                         continue;
@@ -260,8 +273,12 @@ public static class GlazeBridge {
         return s != null && (s["type"] as string) != "window";
     }
 
+    static readonly object swap2Lock = new object();
+    static volatile string lastSwapKind = "none";   // "swap" si Swap() intercambió dos vecinas
+
     static void Swap(string dir) {
         lock (swapLock) {
+            lastSwapKind = "none";
             ClientWebSocket c = null;
             try {
                 c = new ClientWebSocket();
@@ -300,6 +317,7 @@ public static class GlazeBridge {
                     && ((sib["state"] as System.Collections.Generic.Dictionary<string, object>)["type"] as string) == "tiling";
                 if (sibIsTiledWindow) {
                     Request(c, "command move --direction " + dir);
+                    lastSwapKind = "swap";
                     if (Verbose) Log("swap " + dir + ": intercambiadas");
                     return;
                 }
@@ -330,15 +348,12 @@ public static class GlazeBridge {
                     SwapAcrossGroups(c, win, rawSib, dir);
                     return;
                 }
-                // El primer move a veces solo saca la ventana de su envoltorio y la deja
-                // como columna nueva al lado del grupo destino; el segundo la mete dentro.
-                // Se repite automáticamente para que baste una pulsación.
-                string wid = win["id"] as string;
-                for (int attempt = 0; attempt < 2; attempt++) {
-                    Request(c, "command move --direction " + dir);
-                    if (Verbose) Log("swap " + dir + ": move " + (attempt + 1));
-                    if (!LandedNextToGroup(c, wid, dir)) break;
-                }
+                // Un solo move. El primero a veces solo saca la ventana de su envoltorio
+                // y la deja como columna nueva; para Win+←/→ la segunda pulsación la hace
+                // el manejador "swap2" (solo cuando lastSwapKind == "move").
+                Request(c, "command move --direction " + dir);
+                lastSwapKind = "move";
+                if (Verbose) Log("swap " + dir + ": movida a otro grupo");
             } catch (Exception ex) { Log("swap: " + ex.Message); }
             finally { try { if (c != null) c.Abort(); } catch {} }
         }

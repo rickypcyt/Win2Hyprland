@@ -73,8 +73,10 @@ WsGo(name) {
 ; Intercambia la ventana con su vecina del mismo grupo; si no hay, no hace nada
 ; (el "move" de GlazeWM creaba filas a todo lo ancho). Lo decide glaze-bridge.ps1.
 ; Win+Shift+flechas siguen en GlazeWM (move = movewindow de Hyprland).
-#Left::BridgeSend("swap left")
-#Right::BridgeSend("swap right")
+; Win+←/→ = como pulsar dos veces (el puente repite el movimiento si la ventana
+; pasó a otra columna; así queda debajo de la ventana destino de un solo toque).
+#Left::BridgeSend("swap2 left")
+#Right::BridgeSend("swap2 right")
 #Up::BridgeSend("swap up")
 #Down::BridgeSend("swap down")
 
