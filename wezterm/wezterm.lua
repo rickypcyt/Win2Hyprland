@@ -11,11 +11,12 @@ local config = wezterm.config_builder()
 config.default_prog = { 'pwsh.exe', '-NoLogo' }
 
 -- Linux: si existe la distro de WSL "archlinux", WezTerm abre directamente su shell
--- (zsh + Oh My Zsh) empezando en el home de Linux. Si no existe, se queda en pwsh.
+-- (zsh + Oh My Zsh) empezando en C:SERSICAR (/MNT/C/USERS/RICAR). Si no existe, se queda en pwsh.
 local WSL_DISTRO = 'WSL:archlinux'
 local wsl_domains = wezterm.default_wsl_domains()
 for _, dom in ipairs(wsl_domains) do
-  dom.default_cwd = '~'
+  -- Empezar en C:\Users\ricar (visto desde Linux), como una terminal de Windows
+  dom.default_cwd = '/mnt/c/Users/ricar'
   if dom.name == WSL_DISTRO then
     config.default_domain = WSL_DISTRO
   end
