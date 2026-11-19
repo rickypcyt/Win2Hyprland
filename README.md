@@ -118,13 +118,13 @@ Same style as my kitty:
 - Block cursor and padding of 5.
 - Tabs on top in powerline style (only shown with two or more).
 
-**Linux commands:** WezTerm opens **zsh + Oh My Zsh inside WSL2 (Ubuntu)** by default, so it feels like the terminal I had on Linux. If the `Ubuntu` distro isn't installed, it falls back to PowerShell 7. Windows-only things (Neovim with `Win+C`, `:GCC`) are launched in the local Windows domain.
+**Linux commands:** WezTerm opens **zsh + Oh My Zsh inside WSL2 (Arch Linux)** by default, so it feels like the terminal I had on Linux. If the `archlinux` distro isn't installed, it falls back to PowerShell 7. Windows-only things (Neovim with `Win+C`, `:GCC`) are launched in the local Windows domain.
 
 I use the WezTerm **nightly** build (`winget install wez.wezterm.nightly`). The 2024 stable build ships an old ConPTY that garbles the text when the window is resized, which happens all the time with a tiling WM.
 
 | Shortcut | Action |
 |---|---|
-| `Ctrl+Shift+L` | Pick a shell for a new tab: Ubuntu (zsh), PowerShell 7, PowerShell 5.1, cmd |
+| `Ctrl+Shift+L` | Pick a shell for a new tab: Arch (zsh), PowerShell 7, PowerShell 5.1, cmd |
 | `Ctrl+Alt+T` / `Ctrl+Alt+O` | Split: new terminal to the side |
 | `Ctrl+Alt+Y` | Split: new terminal below |
 | `Ctrl+Shift+←↑→↓` | Move between splits |

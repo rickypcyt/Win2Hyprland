@@ -10,9 +10,9 @@ local config = wezterm.config_builder()
 -- Fuera de WSL: PowerShell 7 (pwsh). PowerShell 5.1 se rompía más al redimensionar.
 config.default_prog = { 'pwsh.exe', '-NoLogo' }
 
--- Linux: si existe la distro de WSL "Ubuntu", WezTerm abre directamente su shell
+-- Linux: si existe la distro de WSL "archlinux", WezTerm abre directamente su shell
 -- (zsh + Oh My Zsh) empezando en el home de Linux. Si no existe, se queda en pwsh.
-local WSL_DISTRO = 'WSL:Ubuntu'
+local WSL_DISTRO = 'WSL:archlinux'
 local wsl_domains = wezterm.default_wsl_domains()
 for _, dom in ipairs(wsl_domains) do
   dom.default_cwd = '~'
@@ -158,7 +158,7 @@ config.keys = {
   -- Nueva pestaña (ojo: AutoHotkey usa Ctrl+Alt+N para "siguiente canción", igual que Hyprland)
   { key = 'n', mods = 'CTRL|ALT', action = act.SpawnTab 'CurrentPaneDomain' },
 
-  -- Elegir shell / distro (Ubuntu, PowerShell, cmd) en una pestaña nueva
+  -- Elegir shell / distro (Arch, PowerShell, cmd) en una pestaña nueva
   { key = 'l', mods = 'CTRL|SHIFT', action = act.ShowLauncherArgs { flags = 'FUZZY|LAUNCH_MENU_ITEMS|DOMAINS' } },
 
   -- Navegar entre pestañas
