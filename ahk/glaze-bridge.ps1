@@ -309,7 +309,16 @@ public static class GlazeBridge {
                 // nunca se crean filas/columnas a todo lo ancho.
                 var all = new System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>>();
                 CollectTiledWindows(path[0], all);
-                if (!HasWindowInDirection(win, all, dir)) { if (Verbose) Log("swap " + dir + ": no hay ventana en esa dirección, nada"); return; }
+                if (!HasWindowInDirection(win, all, dir)) {
+                    // Con solo 2 ventanas, mover hacia un lado vacío convierte dos filas
+                    // en dos columnas (o al revés): es lo que se espera y no rompe nada.
+                    // Con 3 o más, no hacer nada (crearía una fila/columna a todo lo ancho).
+                    if (all.Count == 2) {
+                        Request(c, "command move --direction " + dir);
+                        if (Verbose) Log("swap " + dir + ": 2 ventanas, filas <-> columnas");
+                    } else if (Verbose) Log("swap " + dir + ": no hay ventana en esa dirección, nada");
+                    return;
+                }
 
                 // Caso especial: la ventana está sola en su columna y al lado hay un grupo.
                 // Con move, la columna desaparecería y GlazeWM lo convertiría todo en
