@@ -19,7 +19,12 @@ global WsTarget := "", WsSent := "", WsBusy := false
 GLAZE_CLI := "C:\Program Files\glzr.io\GlazeWM\cli\glazewm.exe"
 WS_PIPE := "\\.\pipe\win2hyprland-ws"
 
-; Arrancar el puente (si ya hay uno corriendo, el nuevo sale solo).
+; Arrancar el puente. Antes se cierra el que hubiera: si no, un puente viejo
+; (de antes de cambiar su código) seguiría corriendo y el nuevo saldría solo.
+for proc in ComObjGet("winmgmts:").ExecQuery("SELECT ProcessId, CommandLine FROM Win32_Process WHERE Name='powershell.exe'")
+    if InStr(proc.CommandLine, "glaze-bridge.ps1")
+        ProcessClose proc.ProcessId
+Sleep 300
 Run 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' A_ScriptDir '\glaze-bridge.ps1"', , "Hide"
 
 ; Mantener WSL Arch encendido: Alacritty abre zsh en Arch, y si Arch está apagado
