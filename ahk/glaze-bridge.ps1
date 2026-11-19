@@ -241,6 +241,25 @@ public static class GlazeBridge {
         } finally { swapping = false; }
     }
 
+    // ¿La ventana quedó como columna/fila suelta (fuera de envoltorios) y en la dirección
+    // del movimiento tiene justo al lado un grupo con varias ventanas? Entonces el
+    // movimiento no ha terminado: falta entrar en ese grupo.
+    static bool LandedNextToGroup(ClientWebSocket c, string id, string dir) {
+        var p = PathOf(c, id);
+        if (p == null || p.Count < 2) return false;
+        string axis = (dir == "left" || dir == "right") ? "horizontal" : "vertical";
+        int i = p.Count - 1;
+        while (i - 1 >= 1 && IsWrapper(p[i - 1])) i--;
+        var cur = p[i]; var par = p[i - 1];
+        if ((par["tilingDirection"] as string) != axis) return false;
+        var k = Kids(par);
+        int j = k.IndexOf(cur) + ((dir == "left" || dir == "up") ? -1 : 1);
+        if (j < 0 || j >= k.Count) return false;
+        var s = k[j] as System.Collections.Generic.Dictionary<string, object>;
+        while (s != null && IsWrapper(s)) s = Kids(s)[0] as System.Collections.Generic.Dictionary<string, object>;
+        return s != null && (s["type"] as string) != "window";
+    }
+
     static void Swap(string dir) {
         lock (swapLock) {
             ClientWebSocket c = null;
@@ -302,8 +321,15 @@ public static class GlazeBridge {
                     SwapAcrossGroups(c, win, rawSib, dir);
                     return;
                 }
-                Request(c, "command move --direction " + dir);
-                if (Verbose) Log("swap " + dir + ": movida a otro grupo");
+                // El primer move a veces solo saca la ventana de su envoltorio y la deja
+                // como columna nueva al lado del grupo destino; el segundo la mete dentro.
+                // Se repite automáticamente para que baste una pulsación.
+                string wid = win["id"] as string;
+                for (int attempt = 0; attempt < 2; attempt++) {
+                    Request(c, "command move --direction " + dir);
+                    if (Verbose) Log("swap " + dir + ": move " + (attempt + 1));
+                    if (!LandedNextToGroup(c, wid, dir)) break;
+                }
             } catch (Exception ex) { Log("swap: " + ex.Message); }
             finally { try { if (c != null) c.Abort(); } catch {} }
         }
