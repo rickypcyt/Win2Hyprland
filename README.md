@@ -69,8 +69,8 @@ The logic is the same as in Hyprland:
 | `Alt+W` | Close the window |
 | `Win+I` | Toggle floating / tiling |
 | `Win+Shift+F` | Fullscreen |
-| `Win+←↑→↓` | Move the window in that direction |
-| `Win+Shift+←↑→↓` | Move the window in that direction |
+| `Win+←↑→↓` | Swap the window with its neighbor in the same group, like Hyprland's `swapwindow`. Does nothing if there's no window there, so it never turns columns into full-width rows. GlazeWM has no swap; the helper (`ahk/glaze-bridge.ps1`) implements it |
+| `Win+Shift+←↑→↓` | Move the window in that direction (GlazeWM `move`, can restructure the layout, like `movewindow`) |
 | `Win+M` | Change the tiling direction (horizontal / vertical) for the next window (dwindle takes over again on the next focus change) |
 
 ### Workspaces

@@ -25,12 +25,13 @@ Run 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File
 
 global WsPipe := ""
 
-WsGo(name) {
-    ; Critical: una pulsación no puede interrumpir a otra, así que los números
+; Escribe una línea en la pipe del puente. false si el puente no responde.
+BridgeSend(line) {
+    ; Critical: una pulsación no puede interrumpir a otra, así que los mensajes
     ; llegan al puente en el mismo orden en que se pulsaron.
     Critical
     global WsPipe, WS_PIPE
-    msg := name "`n"
+    msg := line "`n"
     buf := Buffer(StrPut(msg, "UTF-8") - 1)
     StrPut(msg, buf, "UTF-8")
     loop 3 {
@@ -39,13 +40,27 @@ WsGo(name) {
                 WsPipe := FileOpen(WS_PIPE, "w")   ; conexión persistente
             if DllCall("WriteFile", "ptr", WsPipe.Handle, "ptr", buf, "uint", buf.Size
                      , "uint*", &written := 0, "ptr", 0)
-                return
+                return true
         }
         WsPipe := ""                               ; puente reiniciado: reconectar
         Sleep 5
     }
-    WsGoSlow(name)                                 ; puente caído: vía lenta
+    return false
 }
+
+WsGo(name) {
+    if !BridgeSend(name)
+        WsGoSlow(name)                             ; puente caído: vía lenta
+}
+
+; ---------- Win+flechas = swapwindow de Hyprland ----------
+; Intercambia la ventana con su vecina del mismo grupo; si no hay, no hace nada
+; (el "move" de GlazeWM creaba filas a todo lo ancho). Lo decide glaze-bridge.ps1.
+; Win+Shift+flechas siguen en GlazeWM (move = movewindow de Hyprland).
+#Left::BridgeSend("swap left")
+#Right::BridgeSend("swap right")
+#Up::BridgeSend("swap up")
+#Down::BridgeSend("swap down")
 
 WsGoSlow(name) {
     global WsTarget

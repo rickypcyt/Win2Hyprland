@@ -18,12 +18,12 @@
 # ============================================================
 
 general:
-  # Al arrancar: barra (Zebar) + atajos de AutoHotkey + autotiling.
+  # Al arrancar: barra (Zebar) + atajos de AutoHotkey.
+  # El autotiling (dwindle) lo hace ahk/glaze-bridge.ps1, que lanza hotkeys.ahk.
+  # (scripts/autotile.py hacía lo mismo; se quitó para no tener dos a la vez.)
   startup_commands:
     - 'shell-exec zebar'
     - 'shell-exec C:/Users/ricar/Win2Hyprland/ahk/hotkeys.ahk'
-    # Autotiling tipo dwindle (i3-autolayout): elige split según ancho/alto
-    - 'shell-exec pythonw C:/Users/ricar/Win2Hyprland/scripts/autotile.py'
   shutdown_commands:
     - 'shell-exec taskkill /IM zebar.exe /F'
   config_reload_commands: []
@@ -213,17 +213,8 @@ keybindings:
   - commands: ['toggle-fullscreen']
     bindings: ['lwin+shift+f']
 
-  # Win + flechas: mover la ventana (izquierda/derecha más abajo)
-  - commands: ['move --direction up']
-    bindings: ['lwin+up']
-  - commands: ['move --direction down']
-    bindings: ['lwin+down']
+  # Win + flechas (sin Shift): las maneja AutoHotkey -> glaze-bridge.ps1 (swap tipo Hyprland)
 
-  # swapwindow l/r
-  - commands: ['move --direction left']
-    bindings: ['lwin+left']
-  - commands: ['move --direction right']
-    bindings: ['lwin+right']
 
   # movewindow l/r/u/d
   - commands: ['move --direction left']

@@ -76,12 +76,113 @@ public static class GlazeBridge {
                 while ((line = r.ReadLine()) != null) {
                     line = line.Trim();
                     if (line.Length == 0) continue;
-                    lock (gate) target = line;
+                    if (line.StartsWith("swap ")) {          // Win+flechas
+                        var dir = line.Substring(5);
+                        new Thread(() => Swap(dir)) { IsBackground = true }.Start();
+                        continue;
+                    }
+                    lock (gate) target = line;               // Alt+número
                     if (Verbose) Log("recibido " + line);
                     wake.Set();
                 }
             }
         } catch (Exception ex) { Log("cliente: " + ex.Message); }
+    }
+
+    // ========================================================
+    // Win+flechas = swapwindow de Hyprland
+    // ========================================================
+    // GlazeWM no tiene "swap"; su "move" reorganiza el árbol y, si no hay
+    // ventana en esa dirección, crea filas/columnas a todo lo ancho.
+    // Aquí: si la ventana enfocada tiene en esa dirección una ventana hermana
+    // (mismo grupo, mismo eje), "move" las intercambia. Si no, no se hace nada.
+    static readonly object swapLock = new object();
+
+    static string Request(ClientWebSocket c, string text) {
+        var m = Encoding.UTF8.GetBytes(text);
+        c.SendAsync(new ArraySegment<byte>(m), WebSocketMessageType.Text, true, CancellationToken.None).Wait();
+        var rb = new byte[1 << 16];
+        var cts = new CancellationTokenSource(3000);
+        while (true) {
+            var sb = new StringBuilder();
+            WebSocketReceiveResult res;
+            do {
+                res = c.ReceiveAsync(new ArraySegment<byte>(rb), cts.Token).Result;
+                sb.Append(Encoding.UTF8.GetString(rb, 0, res.Count));
+            } while (!res.EndOfMessage);
+            var s = sb.ToString();
+            if (s.Contains("\"client_response\"")) return s;
+        }
+    }
+
+    // Camino desde el workspace hasta la ventana con foco (último = la ventana).
+    static bool FindFocusedPath(System.Collections.Generic.Dictionary<string, object> node,
+                                System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>> path) {
+        path.Add(node);
+        if ((node["type"] as string) == "window")
+            return node.ContainsKey("hasFocus") && (bool)node["hasFocus"] || Pop(path);
+        var kids = node.ContainsKey("children") ? node["children"] as System.Collections.ArrayList : null;
+        if (kids != null)
+            foreach (var k in kids) {
+                var kd = k as System.Collections.Generic.Dictionary<string, object>;
+                if (kd != null && FindFocusedPath(kd, path)) return true;
+            }
+        return Pop(path);
+    }
+    static bool Pop(System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>> p) { p.RemoveAt(p.Count - 1); return false; }
+
+    static System.Collections.ArrayList Kids(System.Collections.Generic.Dictionary<string, object> n) {
+        return n.ContainsKey("children") ? n["children"] as System.Collections.ArrayList : null;
+    }
+    // Un "envoltorio" es un split con un solo hijo (lo crea set-tiling-direction del autotiling).
+    static bool IsWrapper(System.Collections.Generic.Dictionary<string, object> n) {
+        var k = Kids(n);
+        return (n["type"] as string) == "split" && k != null && k.Count == 1;
+    }
+
+    static void Swap(string dir) {
+        lock (swapLock) {
+            ClientWebSocket c = null;
+            try {
+                c = new ClientWebSocket();
+                c.ConnectAsync(new Uri("ws://127.0.0.1:6123"), CancellationToken.None).Wait(2000);
+                if (c.State != WebSocketState.Open) throw new Exception("sin conexion");
+                var json = new System.Web.Script.Serialization.JavaScriptSerializer { MaxJsonLength = int.MaxValue, RecursionLimit = 2000 };
+                var resp = json.Deserialize<System.Collections.Generic.Dictionary<string, object>>(Request(c, "query workspaces"));
+                var wss = (resp["data"] as System.Collections.Generic.Dictionary<string, object>)["workspaces"] as System.Collections.ArrayList;
+                var path = new System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>>();
+                bool found = false;
+                foreach (var w in wss) {
+                    var wsd = w as System.Collections.Generic.Dictionary<string, object>;
+                    if (wsd != null && wsd.ContainsKey("hasFocus") && (bool)wsd["hasFocus"]) { found = FindFocusedPath(wsd, path); break; }
+                }
+                if (!found || path.Count < 2) { if (Verbose) Log("swap " + dir + ": sin ventana con foco"); return; }
+                var win = path[path.Count - 1];
+                var st = win["state"] as System.Collections.Generic.Dictionary<string, object>;
+                if (st == null || (st["type"] as string) != "tiling") return;   // flotante / fullscreen: nada
+                string axis = (dir == "left" || dir == "right") ? "horizontal" : "vertical";
+                int delta = (dir == "left" || dir == "up") ? -1 : 1;
+                // Subir solo a través de envoltorios de un hijo hasta el grupo real.
+                int i = path.Count - 1;
+                while (i - 1 >= 1 && IsWrapper(path[i - 1])) i--;
+                var cur = path[i]; var par = path[i - 1];
+                System.Collections.Generic.Dictionary<string, object> sib = null;
+                if ((par["tilingDirection"] as string) == axis) {
+                    var kids = Kids(par);
+                    int j = kids.IndexOf(cur) + delta;
+                    if (j >= 0 && j < kids.Count) {
+                        sib = kids[j] as System.Collections.Generic.Dictionary<string, object>;
+                        while (sib != null && IsWrapper(sib)) sib = Kids(sib)[0] as System.Collections.Generic.Dictionary<string, object>;
+                    }
+                }
+                bool sibIsTiledWindow = sib != null && (sib["type"] as string) == "window"
+                    && ((sib["state"] as System.Collections.Generic.Dictionary<string, object>)["type"] as string) == "tiling";
+                if (!sibIsTiledWindow) { if (Verbose) Log("swap " + dir + ": sin vecina en el mismo grupo, no se hace nada"); return; }
+                Request(c, "command move --direction " + dir);
+                if (Verbose) Log("swap " + dir + ": intercambiadas");
+            } catch (Exception ex) { Log("swap: " + ex.Message); }
+            finally { try { if (c != null) c.Abort(); } catch {} }
+        }
     }
 
     static ClientWebSocket ws = null;
