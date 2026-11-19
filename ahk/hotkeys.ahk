@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 ; ============================================================
 ; Atajos que GlazeWM no puede hacer (multimedia, brillo, capturas).
@@ -151,88 +151,5 @@ ChangeBrightness(delta) {
     SetTimer () => ToolTip(), -900
 }
 
-; ============================================================
-; KOMOREBI (alternativa a GlazeWM)
-; ============================================================
-; Estos atajos SOLO se activan si komorebi.exe está corriendo. Con GlazeWM,
-; AutoHotkey los deja pasar y GlazeWM hace lo suyo (config.yaml).
-; Alternar: scripts\use-komorebi.ps1 / scripts\use-glazewm.ps1
-; Mismos atajos que en GlazeWM; Komorebi usa layout BSP (árbol binario tipo
-; bspwm/dwindle) y su "move" INTERCAMBIA ventanas, como swapwindow de Hyprland.
-
-KOMOREBIC := "C:\Program Files\komorebi\bin\komorebic-no-console.exe"
-KomorebiOn() => ProcessExist("komorebi.exe")
-K(args) {
-    global KOMOREBIC
-    Run '"' KOMOREBIC '" ' args, , "Hide"
-}
-
-#HotIf KomorebiOn()
-
-; ---------- Aplicaciones ----------
-#Enter::Run '"C:\Program Files\Alacritty\alacritty.exe"'
-!Enter::Run '"C:\Program Files\Alacritty\alacritty.exe"'
-#Space::Run EnvGet("LOCALAPPDATA") '\FlowLauncher\Flow.Launcher.exe'
-#c::Run '"C:\Program Files\Alacritty\alacritty.exe" --working-directory C:\Users\ricar -e nvim'
-#e::Run "explorer.exe"
-#f::Run EnvGet("LOCALAPPDATA") '\BraveSoftware\Brave-Browser\Application\brave.exe'
-#o::Run EnvGet("LOCALAPPDATA") '\Programs\Obsidian\Obsidian.exe'
-#s::Run "spotify:"
-#z::Run "whatsapp:"
-#+d::Run EnvGet("LOCALAPPDATA") '\Discord\Update.exe --processStart Discord.exe'
-#n::Run "ms-settings:network-wifi"
-#b::Run "ms-settings:bluetooth"
-#v::Run "ms-settings:apps-volume"
-#t::Run "ms-settings:devices-touchpad"
-#q::DllCall("LockWorkStation")
-
-; ---------- Ventanas ----------
-!w::K("close")
-#i::K("toggle-float")
-#+f::K("toggle-monocle")            ; ventana sola ocupando todo el workspace
-#m::K("flip-layout horizontal")
-; Win+flechas: en BSP, "move" intercambia con la ventana de ese lado (swapwindow)
-#Left::K("move left")
-#Right::K("move right")
-#Up::K("move up")
-#Down::K("move down")
-; Win+Shift+flechas: mover el foco (sin ratón)
-#+Left::K("focus left")
-#+Right::K("focus right")
-#+Up::K("focus up")
-#+Down::K("focus down")
-
-; ---------- Workspaces ----------
-!1::K("focus-named-workspace 1")
-!2::K("focus-named-workspace 2")
-!3::K("focus-named-workspace 3")
-!4::K("focus-named-workspace 4")
-!5::K("focus-named-workspace 5")
-!6::K("focus-named-workspace 6")
-!7::K("focus-named-workspace 7")
-!8::K("focus-named-workspace 8")
-!9::K("focus-named-workspace 9")
-!0::K("focus-named-workspace 10")
-; Alt+Shift+número: mandar la ventana sin seguirla (movetoworkspacesilent)
-!+1::K("send-to-named-workspace 1")
-!+2::K("send-to-named-workspace 2")
-!+3::K("send-to-named-workspace 3")
-!+4::K("send-to-named-workspace 4")
-!+5::K("send-to-named-workspace 5")
-!+6::K("send-to-named-workspace 6")
-!+7::K("send-to-named-workspace 7")
-!+8::K("send-to-named-workspace 8")
-!+9::K("send-to-named-workspace 9")
-!+0::K("send-to-named-workspace 10")
-
-; ---------- Monitores ----------
-#^l::Run "DisplaySwitch.exe /external"
-#+l::Run "DisplaySwitch.exe /extend"
-^!m::Run "DisplaySwitch.exe"
-
-; ---------- Control de Komorebi ----------
-^!+r::K("retile")
-^!+Space::K("toggle-pause")
-^!+e::Run 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' A_ScriptDir '\..\scripts\use-glazewm.ps1"', , "Hide"
-
-#HotIf
+; Atajos solo de este PC (no versionados): si existe ahk\local.ahk, se cargan.
+#Include *i %A_ScriptDir%\local.ahk

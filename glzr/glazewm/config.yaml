@@ -35,7 +35,7 @@ general:
     enabled: false
   hide_method: 'cloak'
   # Todas las ventanas en la barra de tareas, también las de otros workspaces
-  # (clic en una de otro workspace = ir a él), como hace Komorebi.
+  # (clic en una de otro workspace = ir a él).
   show_all_in_taskbar: true
 
 

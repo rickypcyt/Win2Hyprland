@@ -23,8 +23,7 @@
       "privileges": {
         "shellCommands": [
           { "program": "explorer", "argsRegex": "^ms-settings:[a-z-]+$" },
-          { "program": "explorer", "argsRegex": "^ms-actioncenter:$" },
-          { "program": "C:\\Program Files\\komorebi\\bin\\komorebic-no-console.exe", "argsRegex": "^focus-named-workspace \\d+$" }
+          { "program": "explorer", "argsRegex": "^ms-actioncenter:$" }
         ]
       },
       "presets": [

@@ -492,7 +492,7 @@ public static class GlazeBridge {
                     tileWake.Set();
                 }
             } catch (Exception ex) {
-                // Con GlazeWM apagado (p. ej. usando Komorebi) esto falla cada segundo:
+                // Con GlazeWM apagado esto falla cada segundo:
                 // registrar solo cuando cambia el error, no llenar el log.
                 if (ex.Message != lastAutoTileError) { Log("autotiling: " + ex.Message); lastAutoTileError = ex.Message; }
             }

@@ -82,7 +82,6 @@
         return {
           onChange: f => listeners.push(f),
           run: cmd => { if (open()) sock.send('command ' + cmd); },
-          isOpen: open,
         };
       })();
 
@@ -97,8 +96,6 @@
         memory: { type: 'memory', refreshInterval: 2000 },
         audio: { type: 'audio' },
         battery: { type: 'battery', refreshInterval: 5000 },
-        // Para cuando se usa Komorebi en vez de GlazeWM (scripts/use-komorebi.ps1)
-        komorebi: { type: 'komorebi' },
       });
 
       const $ = id => document.getElementById(id);
@@ -114,7 +111,7 @@
 
       let wsKey = '';
       // Pinta los puntos: busyNames = workspaces con ventanas, activeName = el visible
-      // (se muestra aunque esté vacío), go(name) = cómo cambiar a él (GlazeWM o Komorebi).
+      // (se muestra aunque esté vacío), go(name) = cómo cambiar a él.
       function drawWorkspaces(busyNames, activeName, go) {
         const el = $('workspaces');
         const names = [...new Set([...busyNames, ...(activeName ? [activeName] : [])])]
@@ -143,15 +140,6 @@
         drawWorkspaces(busy, activeName, name => glaze.run(`focus --workspace ${name}`));
       }
 
-      // Con Komorebi (GlazeWM apagado): mismos puntos, datos del proveedor de Zebar.
-      function renderKomorebi(k) {
-        if (!k || glaze.isOpen()) return;
-        const busy = k.allWorkspaces
-          .filter(w => w.name && (w.tilingContainers.length || w.floatingWindows.length || w.monocleContainer || w.maximizedWindow))
-          .map(w => w.name);
-        drawWorkspaces(busy, k.displayedWorkspace?.name, name =>
-          zebar.shellExec('C:\\Program Files\\komorebi\\bin\\komorebic-no-console.exe', ['focus-named-workspace', name]).catch(() => {}));
-      }
       renderWorkspaces([]);
       glaze.onChange(renderWorkspaces);
 
@@ -246,7 +234,6 @@
       function render() {
         const o = providers.outputMap;
         renderTray(o.systray);
-        renderKomorebi(o.komorebi);
         renderMedia(o.media);
 
         $('time').textContent = o.time?.formatted ?? '';
