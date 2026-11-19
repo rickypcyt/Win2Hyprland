@@ -183,6 +183,7 @@ public static class GlazeBridge {
     }
 
     static volatile bool swapping = false;   // pausa el autotiling durante un intercambio
+    static string lastAutoTileError = null;
     static string Opposite(string d) { return d == "left" ? "right" : d == "right" ? "left" : d == "up" ? "down" : "up"; }
 
     // Busca una ventana por id en el workspace con foco y devuelve su camino.
@@ -490,7 +491,11 @@ public static class GlazeBridge {
                     }
                     tileWake.Set();
                 }
-            } catch (Exception ex) { Log("autotiling: " + ex.Message); }
+            } catch (Exception ex) {
+                // Con GlazeWM apagado (p. ej. usando Komorebi) esto falla cada segundo:
+                // registrar solo cuando cambia el error, no llenar el log.
+                if (ex.Message != lastAutoTileError) { Log("autotiling: " + ex.Message); lastAutoTileError = ex.Message; }
+            }
             try { if (ev != null) ev.Abort(); } catch {}
             Thread.Sleep(1000); // GlazeWM reiniciándose: reconectar
         }

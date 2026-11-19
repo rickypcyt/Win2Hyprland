@@ -82,6 +82,7 @@
         return {
           onChange: f => listeners.push(f),
           run: cmd => { if (open()) sock.send('command ' + cmd); },
+          isOpen: open,
         };
       })();
 
@@ -96,6 +97,8 @@
         memory: { type: 'memory', refreshInterval: 2000 },
         audio: { type: 'audio' },
         battery: { type: 'battery', refreshInterval: 5000 },
+        // Para cuando se usa Komorebi en vez de GlazeWM (scripts/use-komorebi.ps1)
+        komorebi: { type: 'komorebi' },
       });
 
       const $ = id => document.getElementById(id);
@@ -110,15 +113,12 @@
       }
 
       let wsKey = '';
-      function renderWorkspaces(monitors) {
+      // Pinta los puntos: names = workspaces que existen, activeName = el visible,
+      // go(name) = cómo cambiar a él (GlazeWM o Komorebi).
+      function drawWorkspaces(existingNames, activeName, go) {
         const el = $('workspaces');
-        const mine = myMonitor(monitors);
-        const all = monitors.flatMap(m => m.children.filter(c => c.type === 'workspace'));
-        const existing = new Map(all.map(w => [w.name, w]));
-        const names = [...new Set([...PERSISTENT_WS, ...existing.keys()])]
+        const names = [...new Set([...PERSISTENT_WS, ...existingNames])]
           .sort((a, b) => Number(a) - Number(b));
-        // activo = el workspace que se ve en ESTE monitor
-        const activeName = mine?.children.find(w => w.isDisplayed)?.name;
         const key = names.join() + '|' + activeName;
         if (key === wsKey) return; // nada cambió: no tocar el DOM
         wsKey = key;
@@ -128,9 +128,25 @@
           b.className = active ? 'active' : '';
           b.textContent = active ? I.wsActive : I.wsDefault;
           b.title = `Workspace ${name}`;
-          b.onclick = () => glaze.run(`focus --workspace ${name}`);
+          b.onclick = () => go(name);
           return b;
         }));
+      }
+
+      function renderWorkspaces(monitors) {
+        const mine = myMonitor(monitors);
+        const all = monitors.flatMap(m => m.children.filter(c => c.type === 'workspace'));
+        // activo = el workspace que se ve en ESTE monitor
+        const activeName = mine?.children.find(w => w.isDisplayed)?.name;
+        drawWorkspaces(all.map(w => w.name), activeName, name => glaze.run(`focus --workspace ${name}`));
+      }
+
+      // Con Komorebi (GlazeWM apagado): mismos puntos, datos del proveedor de Zebar.
+      function renderKomorebi(k) {
+        if (!k || glaze.isOpen()) return;
+        const names = k.allWorkspaces.map(w => w.name).filter(Boolean);
+        drawWorkspaces(names, k.displayedWorkspace?.name, name =>
+          zebar.shellExec('C:\\Program Files\\komorebi\\bin\\komorebic-no-console.exe', ['focus-named-workspace', name]).catch(() => {}));
       }
       renderWorkspaces([]);
       glaze.onChange(renderWorkspaces);
@@ -226,6 +242,7 @@
       function render() {
         const o = providers.outputMap;
         renderTray(o.systray);
+        renderKomorebi(o.komorebi);
         renderMedia(o.media);
 
         $('time').textContent = o.time?.formatted ?? '';

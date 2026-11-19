@@ -29,6 +29,7 @@ It's fast and it holds up day to day. I can hammer `Alt+1234 4321` at full speed
 - [Neovim](#-neovim)
 - [PowerShell 7](#-powershell-7)
 - [WezTerm (alternative terminal)](#-wezterm-alternative-terminal)
+- [Komorebi (true BSP, being tried out)](#-komorebi-true-bsp-being-tried-out)
 - [Under the hood](#-under-the-hood)
 - [Installation](#-installation)
 - [Repository layout](#-repository-layout)
@@ -243,6 +244,23 @@ Still configured with the same look, for when I want tabs and splits like kitty:
 
 ---
 
+## 🧪 Komorebi (true BSP, being tried out)
+
+GlazeWM can only *emulate* Hyprland's binary-tree tiling. [Komorebi](https://github.com/LGUG2Z/komorebi) has it natively: its **BSP** layout is bspwm/dwindle, and its `move` **swaps** windows like `swapwindow`. It's set up to feel like the GlazeWM config, and you can switch back and forth without losing windows:
+
+```powershell
+pwsh -File scripts\use-komorebi.ps1   # GlazeWM -> Komorebi
+pwsh -File scripts\use-glazewm.ps1    # Komorebi -> GlazeWM (or Ctrl+Alt+Shift+E while in Komorebi)
+```
+
+- **Config**: `komorebi/komorebi.json`. BSP on workspaces 1–10, gaps 10/5, no borders or transparency, dialogs/installers/Flow Launcher floating, Zebar ignored. Plus Komorebi's own per-app rules (`komorebi/applications.json`).
+- **Same shortcuts**, through AutoHotkey: a section of `hotkeys.ahk` that's only active while `komorebi.exe` runs. `Win+arrows` swap, `Win+Shift+arrows` move focus, `Alt+number` / `Alt+Shift+number`, `Alt+W`, `Win+I` float, `Win+Shift+F` monocle, `Win+M` flip, and the app launchers.
+- **The bar** shows Komorebi's workspaces too (it falls back to Zebar's Komorebi provider when GlazeWM isn't running).
+- **Switching cleanly**: GlazeWM is quit with `wm-exit` (never killed). `use-komorebi.ps1` also undoes two things GlazeWM leaves behind and Komorebi trips over: stripped title bars and the "layered" flag from the old transparency.
+- Not ported yet: focus-follows-mouse (Komorebi dropped it) and the dwindle direction trick, which BSP doesn't need.
+
+---
+
 ## 🔧 Under the hood
 
 ### Fast, unbreakable `Alt+number`
@@ -341,7 +359,12 @@ Win2Hyprland/
 ├── ahk/
 │   ├── hotkeys.ahk            ← Alt+number, Win+arrows, media, brightness, screenshots
 │   └── glaze-bridge.ps1       ← fast workspaces · dwindle autotiling · Hyprland-style swap
+├── komorebi/
+│   ├── komorebi.json          ← Komorebi config (BSP), the alternative to GlazeWM
+│   └── applications.json      ← Komorebi's per-app rules (komorebic fetch-asc)
 ├── scripts/
+│   ├── use-komorebi.ps1       ← switch GlazeWM -> Komorebi
+│   ├── use-glazewm.ps1        ← switch Komorebi -> GlazeWM
 │   ├── uncloak.ps1            ← recover lost windows
 │   └── autotile.py            ← standalone autotiler (not used; the bridge does it)
 ├── alacritty/alacritty.toml   ← main terminal

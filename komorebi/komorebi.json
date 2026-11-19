@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LGUG2Z/komorebi/v0.1.41/schema.json",
+  "app_specific_configuration_path": "C:/Users/ricar/Win2Hyprland/komorebi/applications.json",
+  "window_hiding_behaviour": "Cloak",
+  "cross_monitor_move_behaviour": "Insert",
+  "default_workspace_padding": 10,
+  "default_container_padding": 5,
+  "border": false,
+  "transparency": false,
+  "mouse_follows_focus": false,
+  "resize_delta": 50,
+  "ignore_rules": [
+    { "kind": "Exe", "id": "zebar.exe", "matching_strategy": "Equals" },
+    { "kind": "Title", "id": "Picture-in-Picture", "matching_strategy": "Contains" },
+    { "kind": "Title", "id": "Imagen con imagen", "matching_strategy": "Contains" }
+  ],
+  "floating_applications": [
+    { "kind": "Class", "id": "#32770", "matching_strategy": "Equals" },
+    { "kind": "Exe", "id": "Flow.Launcher.exe", "matching_strategy": "Equals" },
+    { "kind": "Class", "id": "^(TWizardForm|TSetupForm|MsiDialog(No)?CloseClass)$", "matching_strategy": "Regex" },
+    { "kind": "Exe", "id": "(?i)(setup|install|unins)", "matching_strategy": "Regex" }
+  ],
+  "monitors": [
+    {
+      "workspaces": [
+        { "name": "1", "layout": "BSP" },
+        { "name": "2", "layout": "BSP" },
+        { "name": "3", "layout": "BSP" },
+        { "name": "4", "layout": "BSP" },
+        { "name": "5", "layout": "BSP" },
+        { "name": "6", "layout": "BSP" },
+        { "name": "7", "layout": "BSP" },
+        { "name": "8", "layout": "BSP" },
+        { "name": "9", "layout": "BSP" },
+        { "name": "10", "layout": "BSP" }
+      ]
+    }
+  ]
+}
