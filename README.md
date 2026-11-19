@@ -78,7 +78,7 @@ The logic is the same as in Hyprland:
 | Shortcut | Action |
 |---|---|
 | `Alt+1` … `Alt+9`, `Alt+0` | Go to workspace 1…10 |
-| `Alt+Shift+1` … `Alt+Shift+0` | Move the window to that workspace and follow it |
+| `Alt+Shift+1` … `Alt+Shift+0` | Send the window to that workspace and stay where you are (`movetoworkspacesilent`) |
 
 ### Monitors
 
