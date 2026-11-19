@@ -79,7 +79,10 @@ white   = "#ffffff"
 # ---------- Ventana ----------
 [window]
 padding = { x = 5, y = 5 }   # window_padding 5
-decorations = "None"         # sin barra de título (como 'RESIZE' en WezTerm)
+# Marco normal: la barra de título la quita GlazeWM (hide_title_bar), como en
+# el resto de ventanas. Con "None", Windows dibujaba un instante el borde al
+# cambiar el foco (cada vez que el ratón pasaba por encima, por focus_follows_cursor).
+decorations = "Full"
 opacity = 1.0                # negro sólido
 
 # ---------- Scroll ----------
