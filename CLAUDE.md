@@ -48,7 +48,8 @@ Repo público: https://github.com/rickypcyt/Win2Hyprland. Hacer `git push` solo 
 
 - `shell-exec` de GlazeWM: usar barras `/` en rutas y evitar rutas con espacios y comillas (da "command doesn't have an ending `\"`"). Si la ruta tiene espacios, buscar una alternativa (App Paths, alias en PATH, URI `ms-settings:` …).
 - Atajos `lwin+…` de GlazeWM sustituyen a los de Windows (Win+E, Win+V, Win+S…).
-- `bind_to_monitor` usa el índice de `glazewm query monitors`, que cambia si se desconecta el HDMI.
+- `bind_to_monitor` usa el índice de `glazewm query monitors`, que cambia si se desconecta el HDMI. Con una sola pantalla esa es la 0 y todos los workspaces caen en ella. El reparto lo cambia `scripts/pantalla.ps1` (comando `pantalla`, shim en `~\.local\bin\pantalla.cmd`, fuera del repo; autocompletado en `powershell/profile.ps1`): reescribe esas líneas de `config.yaml`, recarga y mueve los workspaces si hay dos pantallas.
+- **Zebar pierde su reserva de 35px al cambiar de pantallas** (las ventanas la tapan). `hotkeys.ahk` escucha `WM_DISPLAYCHANGE` y, 3 s después del último aviso, lanza `scripts/restart-bar.ps1` (reinicia Zebar con 1 s de pausa, reintenta hasta 3 veces si alguna pantalla no reserva, mutex para no solaparse). Reiniciar Zebar a mano con <1 s entre matar y abrir a veces deja una pantalla sin reserva.
 - El brillo por WMI solo funciona en la pantalla del portátil.
 - La regla `ignore` para `window_process: zebar` es obligatoria; sin ella la barra aparece como ventana en el mosaico.
 - **WSL Arch** (`archlinux`, distro por defecto de WSL): usuario `ricky` (zsh, grupo `wheel` con sudo vía `/etc/sudoers.d/wheel`), usuario por defecto en `/etc/wsl.conf`, Oh My Zsh clonado en `~/.oh-my-zsh` con la plantilla de `.zshrc`. Para tareas de root sin contraseña: `wsl -d archlinux -u root -- ...`. Lanzar `wsl` desde PowerShell, no desde Git Bash (Git Bash reescribe las rutas `/mnt/c/...`).
