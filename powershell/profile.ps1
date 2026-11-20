@@ -14,3 +14,13 @@ if (Test-Path "$GnuBin\ls.exe") {
     function ll { & "$GnuBin\ls.exe" --color=auto -alh @args }
     function la { & "$GnuBin\ls.exe" --color=auto -lhA @args }
 }
+
+# ---------- pantalla (scripts/pantalla.ps1) ----------
+# Tab completa modos, presets y repartos (1=b, 1=l...).
+Register-ArgumentCompleter -Native -CommandName pantalla, pantalla.cmd -ScriptBlock {
+    param($word)
+    $opts = 'laptop', 'benq', 'extend', 'clone', 'trabajo', 'visuales', 'estado', 'ayuda'
+    if ($word -match '^(\d+)[=:]?$') { $n = $Matches[1]; $opts = "$n=b", "$n=l" }
+    $opts | Where-Object { $_ -like "$word*" } |
+        ForEach-Object { [System.Management.Automation.CompletionResult]::new($_) }
+}

@@ -21,7 +21,8 @@
 html,
 body {
   height: 100%;
-  background: var(--bg);
+  /* Ventana transparente: el negro va en #bar, así los márgenes laterales se ven vacíos */
+  background: transparent;
   color: var(--text);
   font-family: 'JetBrainsMono Nerd Font', 'JetBrainsMono NF', monospace;
   font-size: 15px;
@@ -32,6 +33,9 @@ body {
 
 #bar {
   height: 35px;
+  /* Márgenes a los lados */
+  margin: 0 8px;
+  background: var(--bg);
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;

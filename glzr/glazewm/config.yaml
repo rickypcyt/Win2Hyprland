@@ -45,7 +45,7 @@ gaps:
   scale_with_dpi: true
   inner_gap: '5px'
   outer_gap:
-    top: '10px'
+    top: '5px'   # hueco entre la barra y las ventanas (antes 10px)
     right: '10px'
     bottom: '10px'
     left: '10px'
@@ -91,23 +91,26 @@ window_behavior:
       shown_on_top: false
 
 
-# workspace 1 → HDMI-A-1, 2-5 → eDP-1
+# workspaces 1-4 → BenQ, 5 → portátil
 # bind_to_monitor es el índice de monitor de GlazeWM
 # (ver: glazewm query monitors):
 #   0 = BenQ externo (BNQ78FA)   1 = pantalla del portátil (NCP002D)
+# Si solo hay una pantalla (solo portátil o "mostrar solo en 2"), esa es la 0
+# y el índice 1 no existe, así que todos los workspaces caen en ella.
+# Al volver a modo extendido, GlazeWM devuelve el 5 a la pantalla 1.
 workspaces:
   - name: '1'
     keep_alive: true
     bind_to_monitor: 0
   - name: '2'
     keep_alive: true
-    bind_to_monitor: 1
+    bind_to_monitor: 0
   - name: '3'
     keep_alive: true
-    bind_to_monitor: 1
+    bind_to_monitor: 0
   - name: '4'
     keep_alive: true
-    bind_to_monitor: 1
+    bind_to_monitor: 0
   - name: '5'
     keep_alive: true
     bind_to_monitor: 1
@@ -164,7 +167,7 @@ keybindings:
 
   # $fileManager = thunar  → Explorador
   - commands: ['shell-exec explorer.exe']
-    bindings: ['lwin+e']
+    bindings: ['lwin+e', 'alt+e']
 
   # $browser = brave
   - commands: ['shell-exec C:/Users/ricar/AppData/Local/BraveSoftware/Brave-Browser/Application/brave.exe']

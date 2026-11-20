@@ -32,6 +32,15 @@ Run 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File
 ; Un "sleep infinity" oculto lo mantiene vivo; si ya existe, no se crea otro.
 Run 'wsl.exe -d archlinux -u ricky --exec bash -c "pgrep -f ^w2h-keepalive >/dev/null || exec -a w2h-keepalive sleep infinity"', , "Hide"
 
+; ---------- Barra al cambiar de pantallas ----------
+; Al extender / solo portátil / solo BenQ, Zebar pierde su hueco arriba y las
+; ventanas la tapan. WM_DISPLAYCHANGE (0x7E) llega varias veces por cambio, así
+; que se espera 3 s desde el último aviso y se reinicia la barra una sola vez.
+OnMessage(0x7E, (*) => SetTimer(RestartBar, -3000))
+RestartBar() {
+    Run 'pwsh.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' A_ScriptDir '\..\scripts\restart-bar.ps1"', , "Hide"
+}
+
 ; ---------- Ventanas perdidas ----------
 ; Si GlazeWM se cerró mal, las ventanas de otros workspaces se quedan ocultas
 ; (abiertas pero invisibles). scripts\uncloak.ps1 las vuelve a mostrar y GlazeWM
