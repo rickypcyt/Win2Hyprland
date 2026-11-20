@@ -55,13 +55,13 @@ It's fast and it holds up day to day. I can hammer `Alt+1234 4321` at full speed
 
 ## 🎨 What it looks like
 
-- **Automatic tiling** with `gaps_in = 5` and `gaps_out = 10`, exactly as in Hyprland.
+- **Automatic tiling** with `gaps_in = 5` and `gaps_out = 10` (5 under the bar).
 - **Dwindle layout**: each new window splits the focused one along its long side, so three windows become *one big window on the left, two stacked on the right*.
 - **Rounded corners**, no borders, no title bars, **no transparency** (every window is opaque).
 - **Focus follows the mouse** (`follow_mouse = 1`).
 - **Floating windows always stay on top** of tiled ones; dialogs and installers open floating and centered.
-- **Workspaces pinned per monitor**: 1 on the external monitor, 2–5 on the laptop screen.
-- **A 35 px black top bar** with JetBrainsMono Nerd Font and Catppuccin Mocha colors, a copy of my Waybar.
+- **Workspaces pinned per monitor**: 1–4 on the external monitor, 5 on the laptop screen, switchable from the terminal with [`pantalla`](#%EF%B8%8F-pantalla-screens-and-workspaces-from-the-terminal). With a single screen on, every workspace goes to it.
+- **A 35 px black top bar** with 8 px side margins, JetBrainsMono Nerd Font and Catppuccin Mocha colors, a copy of my Waybar.
 - **Terminal**: solid black, white **SemiBold** JetBrainsMono Nerd Font 16, my kitty 16-color palette, block cursor.
 
 ---
@@ -84,7 +84,7 @@ Same logic as my Hyprland config:
 | `Win+Enter` / `Alt+Enter` | Alacritty (zsh on Arch) | kitty |
 | `Win+Space` (also `Alt+Space`) | Flow Launcher | rofi -show drun |
 | `Win+C` | Neovim in Alacritty | kitty nvim |
-| `Win+E` | File Explorer | thunar |
+| `Win+E` / `Alt+E` | File Explorer | thunar |
 | `Win+F` | Brave | brave |
 | `Win+O` | Obsidian | obsidian |
 | `Win+S` | Spotify | spotify |
@@ -124,6 +124,22 @@ Same logic as my Hyprland config:
 | `Ctrl+Alt+M` | Windows display switcher | monitors.sh |
 
 `Win+L` can't be rebound: Windows reserves it for locking.
+
+#### 🖥️ `pantalla`: screens and workspaces from the terminal
+
+One command (`scripts/pantalla.ps1`) switches the Windows display mode and decides which screen each workspace lives on:
+
+| Command | Does |
+|---|---|
+| `pantalla` | Status: which screens are on, where every workspace is right now, and the saved layout |
+| `pantalla laptop` / `benq` / `extend` / `clone` | Laptop only / external only / extend / duplicate |
+| `pantalla trabajo` | Extend; 1–4 on the external monitor, 5 on the laptop |
+| `pantalla visuales` | Extend; 1 on the external monitor, 2–5 on the laptop |
+| `pantalla 5=b 2=l` | Just move workspaces (`b` = external, `l` = laptop) |
+| `pantalla extend 1=b 3=b` | Both at once |
+| `pantalla ayuda` | Help |
+
+The layout is saved in `bind_to_monitor` in `config.yaml`, so it survives restarts and plugging screens in and out. It skips switching if you're already in that mode, accepts prefixes (`vis`, `ext`) and single letters, and `Tab` completes it in PowerShell 7.
 
 ### 🎵 Media, brightness, screenshots
 
@@ -190,7 +206,7 @@ Same modules as my Waybar:
 | System tray | | Volume (scroll = change, right-click = mute, click = mixer) |
 | Spotify (click = play/pause, middle = next, right = previous; italic when paused) | | Battery (green / blue / peach / red) |
 
-The bar is docked: Windows reserves its 35 px so windows never slide under it, and fullscreen apps cover it. The workspace dots talk to GlazeWM directly over its WebSocket (Zebar's own GlazeWM module froze under fast switching), so they stay in sync.
+The bar is docked: Windows reserves its 35 px so windows never slide under it, and fullscreen apps cover it. Changing displays (extend, laptop only…) makes Zebar lose that reservation, so AutoHotkey listens for display changes and restarts the bar a few seconds later (`scripts/restart-bar.ps1`), whichever way you switched. The workspace dots talk to GlazeWM directly over its WebSocket (Zebar's own GlazeWM module froze under fast switching), so they stay in sync.
 
 Compared to Waybar it lacks CPU temperature and brightness: Zebar has no source for them.
 
@@ -290,6 +306,9 @@ New-Item -ItemType Junction -Path "$env:APPDATA\alacritty"          -Target "$en
 New-Item -ItemType Junction -Path "$env:LOCALAPPDATA\nvim"          -Target "$env:USERPROFILE\Win2Hyprland\nvim"
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.config\wezterm" -Target "$env:USERPROFILE\Win2Hyprland\wezterm"
 Set-Content $PROFILE ". '$env:USERPROFILE\Win2Hyprland\powershell\profile.ps1'"
+# the `pantalla` command (any folder on your PATH works)
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.local\bin" | Out-Null
+Set-Content "$env:USERPROFILE\.local\bin\pantalla.cmd" "@pwsh -NoProfile -ExecutionPolicy Bypass -File `"$env:USERPROFILE\Win2Hyprland\scripts\pantalla.ps1`" %*"
 ```
 
 **3. Arch Linux in WSL**
@@ -342,6 +361,8 @@ Win2Hyprland/
 │   ├── hotkeys.ahk            ← Alt+number, Win+arrows, media, brightness, screenshots
 │   └── glaze-bridge.ps1       ← fast workspaces · dwindle autotiling · Hyprland-style swap
 ├── scripts/
+│   ├── pantalla.ps1           ← display mode + workspace per screen, from the terminal
+│   ├── restart-bar.ps1        ← restart Zebar after a display change
 │   ├── uncloak.ps1            ← recover lost windows
 │   └── autotile.py            ← standalone autotiler (not used; the bridge does it)
 ├── alacritty/alacritty.toml   ← main terminal
